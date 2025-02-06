@@ -1,0 +1,35 @@
+%As a Definition?
+\todo{Rewrite}
+Suppose we have a hidden Markov model (HMM), also called a state-space model (SSM). Specifically, we consider a discrete-time Markov process $\{X_n; n\geq 1\}$, where  $X_n \subset \mathcal{X}^n$ for each $n$. It is characterized by an initial distribution 
+\[
+X_1 \sim \mu(x_1)
+\] 
+and the transition density
+\[
+X_{n+1} \vert (X_n=x_n) \sim f_\theta(x_{n+1} \vert x_n)
+\]
+for some parameter $\theta \in \Theta$. Our goal is to infer the latent states $\{X_n\}$, given a sequence of noisy observations $\{Y_n; n\geq 1\}$, where $Y_n \subset \mathcal{Y}^n$ for each $n$. The observation $Y_n$ is assumed to be conditionally independent given $X_n$, meaning that for $1\leq n\leq m$,
+\[
+Y_n \vert (X_1=x_1,\dots, X_n=x_n,\dots,X_m=x_m) \sim g_\theta(y_n \vert X_n=x_n).
+\]
+% EXPAND BELOW
+Let $y_{1:T}=(y_1,\dots,y_T)$ denote the sequence of observations up to time $T\geq 1$. If $\theta\in \Theta$ is known then Bayesian inference gives us the posterior density as $p_\theta(x_{1:T} \vert y_{1:T}) \propto p_\theta(x_{1:T}, y_{1:T})$ where
+\[
+p_\theta(x_{1:T}, y_{1:T})=\mu_\theta(x_1)\prod_{n=2}^{T}f_\theta(x_n\vert x_{n-1})\prod_{n=1}^{T}g_\theta(y_n \vert x_n).
+\]
+When $\theta$ is unknown we give a prior density $p(\theta)$ to $\theta$ and Bayesian inference then relies on the joint posterior density
+\[
+p(\theta,x_{1:T}\vert y_{1:T}) \propto p_\theta(x_{1:T}, y_{1:T})p(\theta). 
+\]
+In most cases, neither $p_\theta(x_{1:T}, y_{1:T})$ nor $p(\theta,x_{1:T}\vert y_{1:T})$ admit closed-form solutions, necessitating the use of Monte Carlo methods for inference. In most cases, directly sampling the densities 
+is infeasible due to the high-dimensional nature of the state space and the complexity of the model. In the case of a known $\theta \in \Theta$ sequential Monte Carlo (SMC) is a class of algorithms to approximate sequentially the
+sequence of posterior densities $\{p_\theta(x_{1:n}\vert y_{1:n}; n\geq 1)\}$ and the sequence of marginal likelihoods $\{p_\theta(y_{1:n}); n\geq 1\}$.
+
+% Apply SMC in this context
+SMC methods are a general class of Monte Carlo methods that sample sequentially from a sequence of target
+probability densities $\{\pi_n(x_{1:n}); n\geq 1\}$, where $\pi_n(x_{1:n}) \subset \mathcal{X}^n$ for each $n$. 
+In many practical applications, the normalizing constant $Z_n$ is unknown, and one of the advantages of SMC is that it also provides an estimate $\widehat{Z}_n$ alongside approximations of the target distribution.
+Specifically, at time $n=1$ we get an approximation of $\pi_1(x_1)$ and an estimate of $Z_1$, then at time $n=2$ we get an approximation of $\pi_2(x_{1:2})$ and an estimate of $Z_2$ and so on. Here for instance we could have $\gamma_n(x_{1:n})=p(x_{1:n}, y_{1:n})$ and $Z_n=p(y_{1:n})$, thus $\pi_n(x_{1:n})=p(x_{1:n}\vert y_{1:n})$.
+
+% Filtering+Smoothing? Before or after this?
+\section{Filtering}

@@ -1,0 +1,15 @@
+\babel@toc {english}{}\relax 
+\contentsline {chapter}{Contents}{3}{section*.1}%
+\contentsline {chapter}{\chapternumberline {1}Introduction}{4}{chapter.1}%
+\contentsline {chapter}{\chapternumberline {2}Monte Carlo Methods}{5}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Importance Sampling}{5}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Sequential Importance Sampling}{8}{section.2.2}%
+\contentsline {section}{\numberline {2.3}Resampling}{10}{section.2.3}%
+\contentsline {subsection}{Reducing variance of Resampling}{12}{theorem.2.7}%
+\contentsline {subsection}{Resampling within SMC}{12}{theorem.2.7}%
+\contentsline {chapter}{\chapternumberline {3}Particle Markov Chain Monte Carlo Methods}{14}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Filtering}{15}{section.3.1}%
+\contentsline {chapter}{\chapternumberline {4}Simulation Studies}{16}{chapter.4}%
+\contentsline {chapter}{\chapternumberline {5}Application to Stochastic SIR Models}{17}{chapter.5}%
+\contentsline {chapter}{\chapternumberline {6}Conclusion and Future Work}{18}{chapter.6}%
+\contentsline {chapter}{Bibliography}{19}{chapter*.4}%

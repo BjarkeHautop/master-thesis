@@ -1,0 +1,127 @@
+\documentclass[12pt,a4paper,oneside]{memoir}
+\pagestyle{plain}
+% Set margins
+\usepackage[a4paper, margin=1in]{geometry}
+
+% Add packages for your needs
+\usepackage{amsmath, amssymb, mathtools}
+\usepackage{graphicx, hyperref, microtype}
+\usepackage{natbib}
+
+\usepackage{comment}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{amsthm}
+\usepackage{float}
+\usepackage{lipsum}
+
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{todonotes}
+
+
+\DeclareMathOperator{\EX}{\mathbb{E}}% expected value
+\DeclareMathOperator{\Var}{\mathbb{V}}% Variance
+
+% Define theorem-like environments
+\theoremstyle{definition}
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}[theorem]{Definition}	
+\newtheorem{example}[theorem]{Example}
+
+% Define Algorithm as a theorem-like environment
+\makeatletter
+\let\c@algorithm\c@theorem
+\makeatother
+\renewcommand{\thealgorithm}{\thetheorem}
+
+\makeglossary
+\glossary{test}
+
+
+	
+\usepackage{titlesec}
+
+% Modify chapter title format
+\titleformat{\chapter}[hang] 
+{\normalfont\huge\bfseries}{\thechapter}{1em}{}
+
+
+
+% Begin the document
+\begin{document}
+	
+	% Custom title page
+	\begin{center}
+		\vspace*{1cm}
+		
+		\Huge 
+		\textbf{Particle Markov Chain Monte Carlo  Methods}
+		
+		\vspace{1.5cm}
+		
+		\textbf{Bjarke Hautop}\\[0.5cm]
+		\Large
+		Student ID: 202005674
+		
+		\vspace{1.6cm}
+		\includegraphics[width=0.5\textwidth]{segl.png}
+		\vfill
+		\Huge
+		Master's Thesis in Statistics
+		
+		\vspace{0.8cm}
+		
+		\includegraphics[width=0.4\textwidth]{logo.png}
+		
+		\Large
+		Aarhus University\\
+		Supervisor: Jan Pedersen\\
+		\today
+		
+	\end{center}
+	\newpage
+	
+	% Abstract
+	\begin{abstract}
+		\lipsum[1]
+	\end{abstract}
+	\newpage
+	
+	% Table of contents
+	\tableofcontents
+	
+	% Chapter 1: Introduction
+	\chapter{Introduction}
+	\input{chapters/introduction.tex}
+	
+	% Chapter 2: Monte Carlo Methods
+	\chapter{Monte Carlo Methods}
+	\input{chapters/MonteCarlo.tex}
+	% Chapter 2: Review of Particle Markov Chain Monte Carlo Methods
+	\chapter{Particle Markov Chain Monte Carlo Methods}
+	\input{chapters/review.tex}
+	
+	% Chapter 3: Methodology and Implementation
+	%\chapter{Methodology and Implementation}
+	%\input{chapters/methodology.tex}
+	
+	% Chapter 4: Simulation Studies
+	\chapter{Simulation Studies}
+	\input{chapters/simulation.tex}
+	
+	% Chapter 5: Application to Stochastic SIR Models
+	\chapter{Application to Stochastic SIR Models}
+	\input{chapters/application.tex}
+	
+	% Chapter 6: Conclusion and Future Work
+	\chapter{Conclusion and Future Work}
+	\input{chapters/conclusion.tex}
+	
+	% Bibliography
+	\bibliographystyle{abbrvnat}
+	\bibliography{references}
+	%\printbibliography %Prints bibliography
+	
+\end{document}
