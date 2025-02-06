@@ -1,0 +1,53 @@
+\begin{thebibliography}{6}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Andrieu et~al.(2010)Andrieu, Doucet, and Holenstein]{Andrieu}
+C.~Andrieu, A.~Doucet, and R.~Holenstein.
+\newblock Particle markov chain monte carlo methods.
+\newblock \emph{Journal of the Royal Statistical Society Series B: Statistical
+  Methodology}, 72\penalty0 (3):\penalty0 269--342, 05 2010.
+\newblock \doi{10.1111/j.1467-9868.2009.00736.x}.
+\newblock URL \url{https://doi.org/10.1111/j.1467-9868.2009.00736.x}.
+
+\bibitem[Doucet and Johansen(2009)]{Doucet}
+A.~Doucet and A.~Johansen.
+\newblock A tutorial on particle filtering and smoothing: Fifteen years later.
+\newblock \emph{Handbook of Nonlinear Filtering}, 12, 01 2009.
+
+\bibitem[Kroese et~al.(2013)Kroese, Taimre, and Botev]{kroese2013handbook}
+D.~Kroese, T.~Taimre, and Z.~Botev.
+\newblock \emph{Handbook of Monte Carlo Methods}.
+\newblock Wiley Series in Probability and Statistics. Wiley, 2013.
+\newblock ISBN 9781118014950.
+\newblock URL \url{https://books.google.dk/books?id=Trj9HQ7G8TUC}.
+
+\bibitem[Liu and Chen(1995)]{Liu}
+J.~S. Liu and R.~Chen.
+\newblock Blind deconvolution via sequential imputations.
+\newblock \emph{Journal of the American Statistical Association}, 90\penalty0
+  (430):\penalty0 567--576, 1995.
+\newblock \doi{10.1080/01621459.1995.10476549}.
+\newblock URL
+  \url{https://www.tandfonline.com/doi/abs/10.1080/01621459.1995.10476549}.
+
+\bibitem[Moral(2004)]{moral2004feynman}
+P.~Moral.
+\newblock \emph{Feynman-Kac Formulae: Genealogical and Interacting Particle
+  Systems with Applications}.
+\newblock Probability and Its Applications. Springer New York, 2004.
+\newblock ISBN 9780387202686.
+\newblock URL \url{https://books.google.dk/books?id=8LypfuG8ZLYC}.
+
+\bibitem[Shimao(2018)]{min_var_IS}
+Shimao.
+\newblock How is this minimum variance worked out for this importance sampling
+  estimator?
+\newblock Cross Validated, \url{https://stats.stackexchange.com/q/324834},
+  2018.
+\newblock (Version: 2018-01-24).
+
+\end{thebibliography}
