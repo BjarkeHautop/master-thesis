@@ -301,6 +301,6 @@ p_rmse <- ggplot(df_rmse, aes(x = Method, y = RMSE_mean, fill = Method)) +
   geom_errorbar(aes(ymin = RMSE_mean - RMSE_sd, ymax = RMSE_mean + RMSE_sd),
                 width = 0.2) +
   theme_minimal() +
-  labs(title = "RMSE of Particle Filter Methods (100 Replications)", y = "RMSE") +
+  labs(title = "RMSE of Particle Filter Methods (10000 Replications)", y = "RMSE") +
   scale_fill_manual(values = c("red", "blue", "green"))
 print(p_rmse)
