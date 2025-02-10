@@ -240,7 +240,7 @@ print(p2)
 # 6. REPEATED SIMULATIONS
 ###########################################
 
-n_reps <- 100
+n_reps <- 10000
 rmse_SIS_all   <- numeric(n_reps)
 rmse_SISR_all  <- numeric(n_reps)
 rmse_SISAR_all <- numeric(n_reps)
