@@ -1,4 +1,5 @@
 library(ggplot2)
+library(tibble)
 set.seed(1405)
 
 ###########################################
@@ -123,15 +124,16 @@ particle_filter <- function(y, N, init_fn, transition_fn, likelihood_fn,
 # 3. EXAMPLE SETUP: LINEAR GAUSSIAN SSM
 ###########################################
 # SSM definitions:
-#    X_t = phi * X_{t-1} + sigma_x * V_t,   V_t ~ N(0,1)
+#    X_0 ~ N(0,1)
+#    X_t = phi * X_{t-1} + sin(X_{t-1}) + sigma_x * V_t,   V_t ~ N(0,1)
 #    Y_t = X_t + sigma_y * W_t,              W_t ~ N(0,1)
 
-init_fn_ssm <- function(N, phi, sigma_x, ...) {
-  rnorm(N, mean = 0, sd = sigma_x / sqrt(1 - phi^2))
+init_fn_ssm <- function(N, ...) {
+  rnorm(N, mean = 0, sd = 1)
 }
 
 transition_fn_ssm <- function(particles, t, phi, sigma_x, ...) {
-  phi * particles + rnorm(length(particles), mean = 0, sd = sigma_x)
+  phi * particles + sin(particles) + rnorm(length(particles), mean = 0, sd = sigma_x)
 }
 
 likelihood_fn_ssm <- function(y, particles, t, sigma_y, ...) {
@@ -141,10 +143,10 @@ likelihood_fn_ssm <- function(y, particles, t, sigma_y, ...) {
 simulate_ssm <- function(T, phi, sigma_x, sigma_y) {
   x <- numeric(T)
   y <- numeric(T)
-  x[1] <- rnorm(1, mean = 0, sd = sigma_x / sqrt(1 - phi^2))
+  x[1] <- rnorm(1, mean = 0, sd = 1)
   y[1] <- rnorm(1, mean = x[1], sd = sigma_y)
   for (t in 2:T) {
-    x[t] <- phi * x[t - 1] + rnorm(1, mean = 0, sd = sigma_x)
+    x[t] <- phi * x[t - 1] + sin(x[t-1]) + rnorm(1, mean = 0, sd = sigma_x)
     y[t] <- x[t] + rnorm(1, mean = 0, sd = sigma_y)
   }
   list(x = x, y = y)
@@ -167,6 +169,21 @@ sigma_y_val <- 1
 sim_data <- simulate_ssm(T_val, phi_val, sigma_x_val, sigma_y_val)
 x_true <- sim_data$x
 y_obs  <- sim_data$y
+
+df <- tibble(
+  time = 1:length(x_true),
+  x_true = x_true,
+  y_obs = y_obs
+)
+
+# Plot
+ggplot(df, aes(x = time)) +
+  geom_line(aes(y = x_true, color = "True State"), linewidth = 1) +
+  geom_point(aes(y = x_true, color = "True State"), size = 2, alpha = 0.7) +  # Faint points for x_true
+  geom_point(aes(y = y_obs, color = "Observed"), size = 2, alpha = 0.7) +
+  scale_color_manual(values = c("True State" = "blue", "Observed" = "red")) +
+  labs(x = "Time", y = "Value", color = "Legend") +
+  theme_minimal()
 
 result_SIS <- particle_filter(y = y_obs, N = N_particles,
                               init_fn = init_fn_ssm,
