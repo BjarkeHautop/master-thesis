@@ -121,7 +121,7 @@ particle_filter <- function(y, N, init_fn, transition_fn, likelihood_fn,
 }
 
 ###########################################
-# 3. EXAMPLE SETUP: LINEAR GAUSSIAN SSM
+# 3. EXAMPLE SETUP: NON-LINEAR GAUSSIAN SSM
 ###########################################
 # SSM definitions:
 #    X_0 ~ N(0,1)
