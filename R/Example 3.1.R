@@ -124,7 +124,7 @@ particle_filter <- function(y, N, init_fn, transition_fn, likelihood_fn,
 # 3. EXAMPLE SETUP: NON-LINEAR GAUSSIAN SSM
 ###########################################
 # SSM definitions:
-#    X_0 ~ N(0,1)
+#    X_1 ~ N(0,1)
 #    X_t = phi * X_{t-1} + sin(X_{t-1}) + sigma_x * V_t,   V_t ~ N(0,1)
 #    Y_t = X_t + sigma_y * W_t,              W_t ~ N(0,1)
 
@@ -178,12 +178,22 @@ df <- tibble(
 
 # Plot
 ggplot(df, aes(x = time)) +
-  geom_line(aes(y = x_true, color = "True State"), linewidth = 1) +
-  geom_point(aes(y = x_true, color = "True State"), size = 2, alpha = 0.7) +  # Faint points for x_true
-  geom_point(aes(y = y_obs, color = "Observed"), size = 2, alpha = 0.7) +
-  scale_color_manual(values = c("True State" = "blue", "Observed" = "red")) +
-  labs(x = "Time", y = "Value", color = "Legend") +
-  theme_minimal()
+  geom_line(aes(y = x_true, color = "Latent State X_t"), linewidth = 1.2) +
+  geom_point(aes(y = x_true, color = "Latent State X_t"), size = 2, alpha = 0.7) +
+  geom_line(aes(y = y_obs, color = "Observed State Y_t"), linewidth = 1, linetype = "dashed") +
+  geom_point(aes(y = y_obs, color = "Observed State Y_t"), size = 2.5, alpha = 0.6) +
+  scale_color_manual(values = c("Latent State X_t" = "dodgerblue3", "Observed State Y_t" = "firebrick")) +
+  labs(x = "Time", y = "State Value", color = "State Type") +
+  theme_minimal(base_size = 14) +
+  theme(
+    axis.title = element_text(face = "bold"),
+    axis.text = element_text(size = 12),
+    legend.position = "top",
+    panel.grid.minor = element_line(color = "gray90", linetype = "dotted")
+  )
+
+ggsave("example_3.1.png", width = 6.27, height = 4, dpi = 300)
+
 
 result_SIS <- particle_filter(y = y_obs, N = N_particles,
                               init_fn = init_fn_ssm,
@@ -226,32 +236,28 @@ df_state <- data.frame(
             result_SIS$state_est,
             result_SISR$state_est,
             result_SISAR$state_est),
-  Method = factor(rep(c("True State", "SIS", "SISR", "SISAR"),
+  Method = factor(rep(c("Latent State", "SIS", "SISR", "SISAR"),
                       each = T_val),
-                  levels = c("True State", "SIS", "SISR", "SISAR"))
+                  levels = c("Latent State", "SIS", "SISR", "SISAR"))
 )
 
-p1 <- ggplot(df_state, aes(x = Time, y = State, color = Method, linetype = Method)) +
-  geom_line(size = 1.2) +
-  theme_minimal() +
-  labs(title = "True State vs Particle Filter Estimates", y = "State") +
-  scale_color_manual(values = c("black", "red", "blue", "green"))
-print(p1)
+ggplot(df_state, aes(x = Time, y = State, color = Method, linetype = Method)) +
+  geom_line(size = 1.2, alpha = 0.8) +
+  theme_minimal(base_size = 14) +
+  labs(title = "Latent States and Particle Filter Estimates", y = "State") +
+  scale_color_viridis_d(option = "plasma") +
+  scale_linetype_manual(values = c("solid", "solid", "solid", "solid")) +
+  theme(
+    axis.title = element_text(face = "bold"),
+    axis.text = element_text(size = 12),
+    legend.position = "top",
+    panel.grid.minor = element_line(color = "gray90", linetype = "dotted"),
+    legend.title = element_text(size = 12),
+    legend.text = element_text(size = 10)
+  )
 
-df_ess <- data.frame(
-  Time = rep(time, 3),
-  ESS = c(result_SIS$ESS, result_SISR$ESS, result_SISAR$ESS),
-  Method = factor(rep(c("SIS", "SISR", "SISAR"),
-                      each = T_val),
-                  levels = c("SIS", "SISR", "SISAR"))
-)
+ggsave("example_3.1_estimates.png", width = 6.27, height = 4, dpi = 300)
 
-p2 <- ggplot(df_ess, aes(x = Time, y = ESS, color = Method)) +
-  geom_line(size = 1.2) +
-  geom_point(size = 2) +
-  geom_hline(yintercept = N_particles/2, linetype = "dashed", color = "gray") +
-  theme_minimal()
-print(p2)
 
 ###########################################
 # 6. REPEATED SIMULATIONS
