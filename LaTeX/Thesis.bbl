@@ -1,0 +1,166 @@
+\begin{thebibliography}{21}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Andrieu et~al.(2010)Andrieu, Doucet, and Holenstein]{Andrieu}
+C.~Andrieu, A.~Doucet, and R.~Holenstein.
+\newblock Particle markov chain monte carlo methods.
+\newblock \emph{Journal of the Royal Statistical Society Series B: Statistical
+  Methodology}, 72\penalty0 (3):\penalty0 269--342, 05 2010.
+\newblock \doi{10.1111/j.1467-9868.2009.00736.x}.
+\newblock URL \url{https://doi.org/10.1111/j.1467-9868.2009.00736.x}.
+
+\bibitem[BRESLER(1986)]{BRESLER01021986}
+Y.~BRESLER.
+\newblock Two-filter formulae for discrete-time non-linear bayesian smoothing.
+\newblock \emph{International Journal of Control}, 43\penalty0 (2):\penalty0
+  629--641, 1986.
+\newblock \doi{10.1080/00207178608933489}.
+\newblock URL \url{https://doi.org/10.1080/00207178608933489}.
+
+\bibitem[Dahlin and Schön(2019)]{gettingstarted}
+J.~Dahlin and T.~B. Schön.
+\newblock Getting started with particle metropolis-hastings for inference in
+  nonlinear dynamical models.
+\newblock \emph{Journal of Statistical Software, Code Snippets}, 88\penalty0
+  (2):\penalty0 1–41, 2019.
+\newblock \doi{10.18637/jss.v088.c02}.
+\newblock URL
+  \url{https://www.jstatsoft.org/index.php/jss/article/view/v088c02}.
+
+\bibitem[Douc et~al.(2005)Douc, Cappé, and
+  Moulines]{douc2005comparisonresamplingschemesparticle}
+R.~Douc, O.~Cappé, and E.~Moulines.
+\newblock Comparison of resampling schemes for particle filtering, 2005.
+\newblock URL \url{https://arxiv.org/abs/cs/0507025}.
+
+\bibitem[Doucet and Johansen(2009)]{Doucet}
+A.~Doucet and A.~Johansen.
+\newblock A tutorial on particle filtering and smoothing: Fifteen years later.
+\newblock \emph{Handbook of Nonlinear Filtering}, 12, 01 2009.
+
+\bibitem[Doucet et~al.(2000)Doucet, Godsill, and Andrieu]{Doucet2000}
+A.~Doucet, S.~Godsill, and C.~Andrieu.
+\newblock On sequential monte carlo sampling methods for bayesian filtering.
+\newblock \emph{Statistics and Computing}, 10\penalty0 (3):\penalty0 197--208,
+  Jul 2000.
+\newblock ISSN 1573-1375.
+\newblock \doi{10.1023/A:1008935410038}.
+\newblock URL \url{https://doi.org/10.1023/A:1008935410038}.
+
+\bibitem[Gelman and Rubin(1992)]{Rubin}
+A.~Gelman and D.~B. Rubin.
+\newblock {Inference from Iterative Simulation Using Multiple Sequences}.
+\newblock \emph{Statistical Science}, 7\penalty0 (4):\penalty0 457 -- 472,
+  1992.
+\newblock \doi{10.1214/ss/1177011136}.
+\newblock URL \url{https://doi.org/10.1214/ss/1177011136}.
+
+\bibitem[Gelman et~al.(2013)Gelman, Carlin, Stern, Dunson, Vehtari, and
+  Rubin]{gelman2013bayesian}
+A.~Gelman, J.~Carlin, H.~Stern, D.~Dunson, A.~Vehtari, and D.~Rubin.
+\newblock \emph{Bayesian Data Analysis, Third Edition}.
+\newblock Chapman \& Hall/CRC Texts in Statistical Science. Taylor \& Francis,
+  2013.
+\newblock ISBN 9781439840955.
+\newblock URL \url{https://books.google.dk/books?id=ZXL6AQAAQBAJ}.
+
+\bibitem[Geyer(1992)]{Geyer1992}
+C.~J. Geyer.
+\newblock {Practical Markov Chain Monte Carlo}.
+\newblock \emph{Statistical Science}, 7\penalty0 (4):\penalty0 473 -- 483,
+  1992.
+\newblock \doi{10.1214/ss/1177011137}.
+\newblock URL \url{https://doi.org/10.1214/ss/1177011137}.
+
+\bibitem[Kantas et~al.(2015)Kantas, Doucet, Singh, Maciejowski, and
+  Chopin]{DoucetEstParamSSM}
+N.~Kantas, A.~Doucet, S.~S. Singh, J.~Maciejowski, and N.~Chopin.
+\newblock {On Particle Methods for Parameter Estimation in State-Space Models}.
+\newblock \emph{Statistical Science}, 30\penalty0 (3):\penalty0 328 -- 351,
+  2015.
+\newblock \doi{10.1214/14-STS511}.
+\newblock URL \url{https://doi.org/10.1214/14-STS511}.
+
+\bibitem[Kiderlen(2022)]{kiderlen2022survey}
+M.~Kiderlen.
+\newblock Survey sampling and stereology lecture notes, 2022.
+
+\bibitem[Kroese et~al.(2013)Kroese, Taimre, and Botev]{kroese2013handbook}
+D.~Kroese, T.~Taimre, and Z.~Botev.
+\newblock \emph{Handbook of Monte Carlo Methods}.
+\newblock Wiley Series in Probability and Statistics. Wiley, 2013.
+\newblock ISBN 9781118014950.
+\newblock URL \url{https://books.google.dk/books?id=Trj9HQ7G8TUC}.
+
+\bibitem[Liu and Chen(1995)]{Liu}
+J.~S. Liu and R.~Chen.
+\newblock Blind deconvolution via sequential imputations.
+\newblock \emph{Journal of the American Statistical Association}, 90\penalty0
+  (430):\penalty0 567--576, 1995.
+\newblock \doi{10.1080/01621459.1995.10476549}.
+\newblock URL
+  \url{https://www.tandfonline.com/doi/abs/10.1080/01621459.1995.10476549}.
+
+\bibitem[Moral(2004)]{moral2004feynman}
+P.~Moral.
+\newblock \emph{Feynman-Kac Formulae: Genealogical and Interacting Particle
+  Systems with Applications}.
+\newblock Probability and Its Applications. Springer New York, 2004.
+\newblock ISBN 9780387202686.
+\newblock URL \url{https://books.google.dk/books?id=8LypfuG8ZLYC}.
+
+\bibitem[Pitt et~al.(2012)Pitt, Silva, Giordani, and Kohn]{Pitt}
+M.~K. Pitt, R.~d.~S. Silva, P.~Giordani, and R.~Kohn.
+\newblock {On some properties of Markov chain Monte Carlo simulation methods
+  based on the particle filter}.
+\newblock \emph{Journal of Econometrics}, 171\penalty0 (2):\penalty0 134--151,
+  2012.
+\newblock \doi{10.1016/j.jeconom.2012.06}.
+
+\bibitem[Robert and Casella(2004)]{robert_monte_2004}
+C.~Robert and G.~Casella.
+\newblock \emph{Monte {Carlo} statistical methods}.
+\newblock Springer Verlag, 2004.
+
+\bibitem[Shimao(2018)]{min_var_IS}
+Shimao.
+\newblock How is this minimum variance worked out for this importance sampling
+  estimator?
+\newblock Cross Validated, \url{https://stats.stackexchange.com/q/324834},
+  2018.
+\newblock (Version: 2018-01-24).
+
+\bibitem[{Stan Development Team}(2024)]{Stan}
+{Stan Development Team}.
+\newblock Stan modeling language users guide and reference manual, version
+  2.36, 2024.
+\newblock URL \url{https://mc-stan.org}.
+
+\bibitem[Vats and Knudson(2021)]{VatsKnudson}
+D.~Vats and C.~Knudson.
+\newblock {Revisiting the Gelman–Rubin Diagnostic}.
+\newblock \emph{Statistical Science}, 36\penalty0 (4):\penalty0 518 -- 529,
+  2021.
+\newblock \doi{10.1214/20-STS812}.
+\newblock URL \url{https://doi.org/10.1214/20-STS812}.
+
+\bibitem[Vehtari et~al.(2021)Vehtari, Gelman, Simpson, Carpenter, and
+  B{\"u}rkner]{ImprovedhatR}
+A.~Vehtari, A.~Gelman, D.~Simpson, B.~Carpenter, and P.-C. B{\"u}rkner.
+\newblock {Rank-Normalization, Folding, and Localization: An Improved
+  $\widehat{R}$ for Assessing Convergence of MCMC (with Discussion)}.
+\newblock \emph{Bayesian Analysis}, 16\penalty0 (2):\penalty0 667 -- 718, 2021.
+\newblock \doi{10.1214/20-BA1221}.
+\newblock URL \url{https://doi.org/10.1214/20-BA1221}.
+
+\bibitem[Vehtari et~al.(2024)Vehtari, Simpson, Gelman, Yao, and
+  Gabry]{vehtari2024paretosmoothedimportancesampling}
+A.~Vehtari, D.~Simpson, A.~Gelman, Y.~Yao, and J.~Gabry.
+\newblock Pareto smoothed importance sampling, 2024.
+\newblock URL \url{https://arxiv.org/abs/1507.02646}.
+
+\end{thebibliography}
