@@ -128,15 +128,15 @@ ggplot() +
   theme(
     axis.title = element_text(face = "bold"),
     axis.text = element_text(size = 12),
-    panel.grid.major = element_line(size = 0.5, color = "gray80"),
+    panel.grid.major = element_line(linewidth = 0.5, color = "gray80"),
     panel.grid.minor = element_blank()
   )
 
 ggsave("prior_predictive_check.png",
-  dpi = 300,
-  width = 6.27,
-  height = 4,
-  units = "in"
+       dpi = 300,
+       width = 6.27,
+       height = 4,
+       units = "in"
 )
 
 
@@ -153,10 +153,14 @@ result <- pmmh(
   log_priors = log_priors,
   init_params = c(phi = 0.8, sigma_x = 0.6, sigma_y = 0.6),
   burn_in = 2000,
-  num_chains = 1,
+  num_chains = 4,
   algorithm = "SISAR",
   resample_fn = "stratified",
-  param_transform = c("identity", "log", "log"),
+  param_transform = c(
+    phi = "identity",
+    sigma_x = "log",
+    sigma_y = "log"
+  ),
   verbose = TRUE,
   seed = 1405
 )
@@ -203,7 +207,7 @@ ggplot() +
     data = obs_df, aes(x = time, y = y),
     color = "red", size = 1.2
   ) +
-  labs(x = "Time", y = "Observed y") +
+  labs(x = "Time", y = "Observations y") +
   theme_minimal(base_size = 14) +
   theme(
     axis.title = element_text(face = "bold"),
@@ -213,10 +217,10 @@ ggplot() +
   )
 
 ggsave("posterior_predictive_check.png",
-  dpi = 300,
-  width = 6.27,
-  height = 4,
-  units = "in"
+       dpi = 300,
+       width = 6.27,
+       height = 4,
+       units = "in"
 )
 
 ###########################################
@@ -225,9 +229,9 @@ ggsave("posterior_predictive_check.png",
 
 # Extract the posterior samples from the chain
 chain_1 <- as.data.frame(result$theta_chain[[1]])
-chain_2 <- as.data.frame(result$theta_chain[2])
-chain_3 <- as.data.frame(result$theta_chain[3])
-chain_4 <- as.data.frame(result$theta_chain[4])
+chain_2 <- as.data.frame(result$theta_chain[[2]])
+chain_3 <- as.data.frame(result$theta_chain[[3]])
+chain_4 <- as.data.frame(result$theta_chain[[4]])
 
 # Trace plot of chain_1
 ggplot(chain_1, aes(x = seq_len(nrow(chain_1)), y = phi)) +
@@ -236,10 +240,10 @@ ggplot(chain_1, aes(x = seq_len(nrow(chain_1)), y = phi)) +
   theme_minimal()
 
 ggsave("trace_plot_phi.png",
-  dpi = 300,
-  width = 6.27,
-  height = 4,
-  units = "in"
+       dpi = 300,
+       width = 6.27,
+       height = 4,
+       units = "in"
 )
 
 ggplot(chain_1, aes(x = seq_len(nrow(chain_1)), y = sigma_x)) +
@@ -248,10 +252,10 @@ ggplot(chain_1, aes(x = seq_len(nrow(chain_1)), y = sigma_x)) +
   theme_minimal()
 
 ggsave("trace_plot_sigma_x.png",
-  dpi = 300,
-  width = 6.27,
-  height = 4,
-  units = "in"
+       dpi = 300,
+       width = 6.27,
+       height = 4,
+       units = "in"
 )
 
 ggplot(chain_1, aes(x = seq_len(nrow(chain_1)), y = sigma_y)) +
@@ -260,10 +264,10 @@ ggplot(chain_1, aes(x = seq_len(nrow(chain_1)), y = sigma_y)) +
   theme_minimal()
 
 ggsave("trace_plot_sigma_y.png",
-  dpi = 300,
-  width = 6.27,
-  height = 4,
-  units = "in"
+       dpi = 300,
+       width = 6.27,
+       height = 4,
+       units = "in"
 )
 
 ###########################################
@@ -273,18 +277,18 @@ ggsave("trace_plot_sigma_y.png",
 # Combine chains
 
 phi_chains <- cbind(
-  chain_1$theta_chain[, 1], chain_2$theta_chain[, 1],
-  chain_3$theta_chain[, 1], chain_4$theta_chain[, 1]
+  chain_1$phi, chain_2$phi,
+  chain_3$phi, chain_4$phi
 )
 
 sigma_x_chains <- cbind(
-  chain_1$theta_chain[, 2], chain_2$theta_chain[, 2],
-  chain_3$theta_chain[, 2], chain_4$theta_chain[, 2]
+  chain_1$sigma_x, chain_2$sigma_x,
+  chain_3$sigma_x, chain_4$sigma_x
 )
 
 sigma_y_chains <- cbind(
-  chain_1$theta_chain[, 3], chain_2$theta_chain[, 3],
-  chain_3$theta_chain[, 3], chain_4$theta_chain[, 3]
+  chain_1$sigma_y, chain_2$sigma_y,
+  chain_3$sigma_y, chain_4$sigma_y
 )
 
 phi_df <- data.frame(
@@ -299,17 +303,23 @@ phi_df <- data.frame(
 
 ggplot(phi_df, aes(x = value, fill = chain)) +
   geom_density(alpha = 0.4) +
-  theme_minimal() +
+  theme_minimal(base_size = 14) +
+  theme(
+    axis.title = element_text(face = "bold"),
+    axis.text = element_text(size = 12),
+    panel.grid.major = element_line(size = 0.5, color = "gray80"),
+    panel.grid.minor = element_blank()
+  ) +
   labs(
     x = "Parameter Value",
     y = "Density"
   )
 
 ggsave("density_plot_phi.png",
-  dpi = 300,
-  width = 6.27,
-  height = 4,
-  units = "in"
+       dpi = 300,
+       width = 6.27,
+       height = 4,
+       units = "in"
 )
 
 sigma_x_df <- data.frame(
@@ -324,17 +334,23 @@ sigma_x_df <- data.frame(
 
 ggplot(sigma_x_df, aes(x = value, fill = chain)) +
   geom_density(alpha = 0.4) +
-  theme_minimal() +
+  theme_minimal(base_size = 14) +
+  theme(
+    axis.title = element_text(face = "bold"),
+    axis.text = element_text(size = 12),
+    panel.grid.major = element_line(size = 0.5, color = "gray80"),
+    panel.grid.minor = element_blank()
+  ) +
   labs(
     x = "Parameter Value",
     y = "Density"
   )
 
 ggsave("density_plot_sigma_x.png",
-  dpi = 300,
-  width = 6.27,
-  height = 4,
-  units = "in"
+       dpi = 300,
+       width = 6.27,
+       height = 4,
+       units = "in"
 )
 
 sigma_y_df <- data.frame(
@@ -349,17 +365,23 @@ sigma_y_df <- data.frame(
 
 ggplot(sigma_y_df, aes(x = value, fill = chain)) +
   geom_density(alpha = 0.4) +
-  theme_minimal() +
+  theme_minimal(base_size = 14) +
+  theme(
+    axis.title = element_text(face = "bold"),
+    axis.text = element_text(size = 12),
+    panel.grid.major = element_line(size = 0.5, color = "gray80"),
+    panel.grid.minor = element_blank()
+  ) +
   labs(
     x = "Parameter Value",
     y = "Density"
   )
 
 ggsave("density_plot_sigma_y.png",
-  dpi = 300,
-  width = 6.27,
-  height = 4,
-  units = "in"
+       dpi = 300,
+       width = 6.27,
+       height = 4,
+       units = "in"
 )
 
 ###########################################
@@ -458,7 +480,11 @@ main_function <- function(n_rep) {
       num_chains = 4,
       algorithm = "SISAR",
       resample_fn = "stratified",
-      param_transform = c("identity", "log", "log"),
+      param_transform = c(
+        phi = "identity",
+        sigma_x = "log",
+        sigma_y = "log"
+      ),
       verbose = TRUE,
       seed = 1405 + i
     )
