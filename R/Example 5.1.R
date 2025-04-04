@@ -1,4 +1,4 @@
-library(bayesSSM)
+library(bayesSSM) # My R package see https://bjarkehautop.github.io/bayesSSM/
 library(ggplot2)
 library(tidyr)
 library(extraDistr)
