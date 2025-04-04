@@ -272,7 +272,7 @@ ggplot(df_state, aes(x = Time, y = State, color = Method, linetype = Method)) +
   scale_linetype_manual(values = c("solid", "solid", "solid", "solid")) +
   theme_bw() +
   theme(
-    axis.title = element_text(face = "bold"),
+    axis.title = element_text(size = 14, face = "bold"),
     axis.text = element_text(size = 12),
     legend.position = "top",
     legend.title = element_text(size = 12),
