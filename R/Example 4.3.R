@@ -163,7 +163,7 @@ ggplot() +
   )
 
 ggsave(
-  "prior_predictive_check_example_4.2.png",
+  "prior_predictive_check_example_4.3.png",
   dpi = 300,
   width = 6.27,
   height = 4,
@@ -281,7 +281,7 @@ ggplot() +
   )
 
 ggsave(
-  "posterior_predictive_check_example_4.2.png",
+  "posterior_predictive_check_example_4.3.png",
   dpi = 300,
   width = 6.27,
   height = 4,
@@ -337,7 +337,7 @@ ggplot(phi_df, aes(x = value, fill = chain)) +
     y = "Density"
   )
 
-ggsave("density_plot_phi_example_4.2.png",
+ggsave("density_plot_phi_example_4.3.png",
        dpi = 300,
        width = 6.27,
        height = 4,
@@ -368,7 +368,7 @@ ggplot(sigma_x_df, aes(x = value, fill = chain)) +
     y = "Density"
   )
 
-ggsave("density_plot_sigma_x_example_4.2.png",
+ggsave("density_plot_sigma_x_example_4.3.png",
        dpi = 300,
        width = 6.27,
        height = 4,
@@ -399,7 +399,7 @@ ggplot(sigma_y_df, aes(x = value, fill = chain)) +
     y = "Density"
   )
 
-ggsave("density_plot_sigma_y_example_4.2.png",
+ggsave("density_plot_sigma_y_example_4.3.png",
        dpi = 300,
        width = 6.27,
        height = 4,
