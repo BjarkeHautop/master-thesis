@@ -10,7 +10,7 @@ set.seed(1405)
 outbreak_data <- outbreaks::influenza_england_1978_school
 
 # Add a time variable and create the preprocessed data with day 0 included
-outbreak_data$time <- 1:nrow(outbreak_data)
+outbreak_data$time <- seq_len(nrow(outbreak_data))
 preprocessed_data <- outbreak_data[, c("time", "in_bed")]
 preprocessed_data <- rbind(data.frame(time = 0, in_bed = 0), preprocessed_data)
 
@@ -43,7 +43,7 @@ ggsave(
 n_total <- 763
 init_infected <- 1
 init_state <- c(S = n_total - init_infected, I = init_infected)
-t_max <- nrow(preprocessed_data)-1
+t_max <- nrow(preprocessed_data) - 1
 observations <- preprocessed_data$in_bed
 
 
@@ -169,9 +169,6 @@ transition_fn_epidemic <- function(particles, lambda, gamma) {
 log_likelihood_fn_epidemic <- function(y, particles) {
   # particles is expected to be a matrix with columns (s, i)
   dpois(y, lambda = particles[, 2], log = TRUE)
-
-  # Negative binomial
-  # dnbinom(y, size = phi_true, mu = particles[, 2], log = TRUE)
 }
 
 ###########################################
@@ -194,11 +191,11 @@ prior_samples <- data.frame(
 
 # Simulate trajectories
 simulate_trajectory <- function(
-    prior_samples, n_total, init_infected, t_max
+  prior_samples, n_total, init_infected, t_max
 ) {
   prior_trajectories <- list()
 
-  for (i in 1:nrow(prior_samples)) {
+  for (i in seq_len(nrow(prior_samples))) {
     lambda <- prior_samples$lambda[i]
     gamma <- prior_samples$gamma[i]
 
@@ -213,7 +210,7 @@ simulate_trajectory <- function(
     prior_trajectories[[i]] <- noisy_infected
   }
 
-  return(prior_trajectories)
+  prior_trajectories
 }
 
 # Generate the prior predictive trajectories
@@ -225,9 +222,10 @@ prior_trajectories <- simulate_trajectory(
 plot_data <- data.frame(
   time = rep(0:t_max, times = length(prior_trajectories) + 1),
   infected = c(observations, unlist(prior_trajectories)),
-  type = rep(c(
-    "Observed",
-    paste0("Sampled ", 1:length(prior_trajectories))),
+  type = rep(
+    c(
+      "Observed",
+      paste0("Sampled ", seq_along(prior_trajectories))),
     each = t_max + 1
   )
 )
@@ -253,7 +251,7 @@ ggplot() +
     title = "Prior Predictive Check"
   ) +
   scale_x_continuous(
-    breaks = seq(0, 10, by = 1)
+    breaks = seq(0, 14, by = 1)
   ) +
   theme_bw() +
   theme(
@@ -298,27 +296,11 @@ result_influenza <- bayesSSM::pmmh(
 saveRDS(result_influenza, file = "result_influenza.rds")
 
 # Or load the result from the saved file
-# result_influenza <- readRDS("result_influenza.rds")
+result_influenza <- readRDS("result_influenza.rds")
 
 chains <- result_influenza$theta_chain
 
-chain_1 <- chains[[1]]
-chain_2 <- chains[[2]]
-chain_3 <- chains[[3]]
-chain_4 <- chains[[4]]
-
-lambda_chains <- cbind(
-  chain_1$lambda, chain_2$lambda, chain_3$lambda, chain_4$lambda
-)
-
-lambda_df <- data.frame(
-  value = c(
-    lambda_chains
-  ),
-  chain = factor(rep(1:4, each = nrow(lambda_chains)))
-)
-
-ggplot(lambda_df, aes(x = value, fill = chain)) +
+ggplot(chains, aes(x = lambda, fill = factor(chain))) +
   geom_density(alpha = 0.4) +
   theme_minimal(base_size = 14) +
   theme(
@@ -332,25 +314,15 @@ ggplot(lambda_df, aes(x = value, fill = chain)) +
     y = "Density"
   )
 
-ggsave("density_plot_lambda_influenza.png",
-       dpi = 300,
-       width = 6.27,
-       height = 4,
-       units = "in"
+ggsave(
+  "density_plot_lambda_influenza.png",
+  dpi = 300,
+  width = 6.27,
+  height = 4,
+  units = "in"
 )
 
-gamma_chains <- cbind(
-  chain_1$gamma, chain_2$gamma, chain_3$gamma, chain_4$gamma
-)
-
-gamma_df <- data.frame(
-  value = c(
-    gamma_chains
-  ),
-  chain = factor(rep(1:4, each = nrow(gamma_chains)))
-)
-
-ggplot(gamma_df, aes(x = value, fill = chain)) +
+ggplot(chains, aes(x = gamma, fill = factor(chain))) +
   geom_density(alpha = 0.4) +
   theme_minimal(base_size = 14) +
   theme(
@@ -364,33 +336,24 @@ ggplot(gamma_df, aes(x = value, fill = chain)) +
     y = "Density"
   )
 
-ggsave("density_plot_gamma_influenza.png",
-       dpi = 300,
-       width = 6.27,
-       height = 4,
-       units = "in"
+ggsave(
+  "density_plot_gamma_influenza.png",
+  dpi = 300,
+  width = 6.27,
+  height = 4,
+  units = "in"
 )
 
 ###########################################
 # 5. Inference on R_0
 ###########################################
 
-combined_df_with_r0 <- data.frame(
-  iteration = rep(1:nrow(lambda_chains), times = 4),
-  chain = factor(rep(1:4, each = nrow(lambda_chains))),
-  lambda = c(lambda_chains),
-  gamma = c(gamma_chains),
-  r0 = c(lambda_chains/gamma_chains)
-)
+chains$r0 <- chains$lambda / chains$gamma
 
-m <- nrow(lambda_chains)
-k <- 4
+r0_mean <- mean(chains$r0)
 
-r0_matrix <- matrix(combined_df_with_r0$r0, nrow = m, ncol = k, byrow = FALSE)
-
-r0_mean <- mean(combined_df_with_r0$r0)
-
-r0_ci <- quantile(combined_df_with_r0$r0, probs = c(0.025, 0.975))
+r0_ci <- quantile(chains$r0, probs = c(0.025, 0.975))
+r0_matrix <- matrix(chains$r0, nrow = nrow(chains) / 4, ncol = 4)
 
 ess(r0_matrix)
 rhat(r0_matrix)
@@ -405,16 +368,9 @@ r0_ci
 
 set.seed(1405)
 
-combined_df <- data.frame(
-  iteration = rep(1:nrow(lambda_chains), times = 4),
-  chain = factor(rep(1:4, each = nrow(lambda_chains))),
-  lambda = c(lambda_chains),
-  gamma = c(gamma_chains)
-)
-
 num_iterations <- 100
-sampled_df <- combined_df[
-  sample(nrow(combined_df), num_iterations, replace = TRUE),
+sampled_df <- chains[
+  sample(nrow(chains), num_iterations, replace = TRUE),
 ]
 
 posterior_trajectories <- simulate_trajectory(
@@ -425,9 +381,10 @@ posterior_trajectories <- simulate_trajectory(
 plot_data_posterior <- data.frame(
   time = rep(0:t_max, times = length(posterior_trajectories) + 1),
   infected = c(observations, unlist(posterior_trajectories)),
-  type = rep(c(
-    "Observed",
-    paste0("Sampled ", 1:length(posterior_trajectories))),
+  type = rep(
+    c(
+      "Observed",
+      paste0("Sampled ", seq_along(posterior_trajectories))),
     each = t_max + 1
   )
 )
@@ -454,7 +411,7 @@ ggplot() +
     title = "Posterior Predictive Check"
   ) +
   scale_x_continuous(
-    breaks = seq(0, 10, by = 1)
+    breaks = seq(0, 14, by = 1)
   ) +
   theme_bw() +
   theme(
@@ -466,9 +423,16 @@ ggplot() +
     panel.grid = element_blank()
   )
 
-ggsave("posterior_predictive_check_influenza.png",
-       dpi = 300,
-       width = 6.27,
-       height = 4,
-       units = "in"
+ggsave(
+  "posterior_predictive_check_influenza.png",
+  dpi = 300,
+  width = 6.27,
+  height = 4,
+  units = "in"
 )
+
+###############################################
+# 7. LFO-loo-cv
+###############################################
+
+# Not coded yet ...
