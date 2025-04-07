@@ -175,7 +175,7 @@ ggsave(
 # 5. Run pmmh on dataset
 ###########################################
 
-result <- pmmh(
+result_sir_example_4.3 <- pmmh(
   y = y_obs,
   m = 10000,
   init_fn = init_fn,
@@ -198,10 +198,10 @@ result <- pmmh(
   num_cores = 4
 )
 
-saveRDS(result, "result_sir_example_4.2.rds")
+saveRDS(result_sir_example_4.3, "result_sir_example_4.3.rds")
 
 # Or load the result from a file
-# result <- readRDS("result_sir_example_4.2.rds")
+# result_sir_example_4.3 <- readRDS("result_sir_example_4.3.rds")
 
 ###########################################
 # 6. Posterior predictive check
@@ -213,7 +213,7 @@ set.seed(1405)
 n_ppc <- 4
 
 # Use chain 1
-posterior_samples <- as.data.frame(result$theta_chain[[1]])
+posterior_samples <- as.data.frame(result_sir_example_4.3$theta_chain[[1]])
 
 # Sample posterior parameter values
 params <- posterior_samples[sample(nrow(posterior_samples), n_ppc), ]
@@ -293,10 +293,10 @@ ggsave(
 ###########################################
 
 # Extract the posterior samples from the chain
-chain_1 <- as.data.frame(result$theta_chain[[1]])
-chain_2 <- as.data.frame(result$theta_chain[[2]])
-chain_3 <- as.data.frame(result$theta_chain[[3]])
-chain_4 <- as.data.frame(result$theta_chain[[4]])
+chain_1 <- as.data.frame(result_sir_example_4.3$theta_chain[[1]])
+chain_2 <- as.data.frame(result_sir_example_4.3$theta_chain[[2]])
+chain_3 <- as.data.frame(result_sir_example_4.3$theta_chain[[3]])
+chain_4 <- as.data.frame(result_sir_example_4.3$theta_chain[[4]])
 
 phi_chains <- cbind(
   chain_1$phi, chain_2$phi,
@@ -410,4 +410,4 @@ ggsave("density_plot_sigma_y_example_4.2.png",
 # 8. Inference
 ###########################################
 
-print(result)
+print(result_sir_example_4.3)
