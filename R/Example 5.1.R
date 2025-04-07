@@ -18,8 +18,9 @@ true_gamma <- 0.2 # True removal parameter
 
 # --- Functions for simulating the epidemic ---
 
-epidemic_step <- function(state, t_end, lambda, gamma, n_total) {
+epidemic_step <- function(state, lambda, gamma, n_total) {
   t <- 0
+  t_end <- 1
   s <- state[1]
   i <- state[2]
   while (t < t_end && i > 0) {
@@ -50,7 +51,7 @@ simulate_epidemic <- function(
   states[1, ] <- c(n_total - init_infected, init_infected)
   state <- states[1, ]
   for (t in 1:t_max) {
-    state <- epidemic_step(state, 1, lambda, gamma, n_total)
+    state <- epidemic_step(state, lambda, gamma, n_total)
     states[t + 1, ] <- state
   }
   states
@@ -165,7 +166,7 @@ transition_fn_gillespie <- function(particles, lambda, gamma) {
     if (i == 0) {
       return(c(s, i))
     }
-    epidemic_step(state, t_end = 1, lambda, gamma, n_total)
+    epidemic_step(state, lambda, gamma, n_total)
   }))
   new_particles
 }
@@ -253,22 +254,19 @@ ggplot() +
   scale_x_continuous(
     breaks = seq(0, 10, by = 1)
   ) +
-  theme_minimal(base_size = 16) +
+  theme_bw() +
   theme(
-    axis.title = element_text(face = "bold", size = 16),
-    axis.text = element_text(size = 14),
-    plot.title = element_text(size = 18, face = "bold", hjust = 0.5),
-    panel.grid.major = element_line(linewidth = 0.7, color = "gray90"),
-    panel.grid.minor = element_blank(),
+    axis.title = element_text(face = "bold", size = 14),
+    axis.text = element_text(size = 12),
+    plot.title = element_text(size = 16, face = "bold", hjust = 0.5),
     legend.position = "top",
     legend.title = element_blank(),
-    legend.text = element_text(size = 14),
-    plot.margin = margin(10, 20, 10, 20)
+    panel.grid = element_blank()
   )
 
 # Save the plot
 ggsave(
-  "prior_predictive_check_sir.png",
+  "prior_predictive_check_sir_example_5.1.png",
   dpi = 300,
   width = 6.27,
   height = 4,
@@ -281,7 +279,7 @@ ggsave(
 # 4. PMMH
 ###########################################
 
-result <- bayesSSM::pmmh(
+result_sir_example_5.1 <- bayesSSM::pmmh(
   y = observations,
   m = 10000,
   init_fn = init_fn_epidemic,
@@ -293,11 +291,17 @@ result <- bayesSSM::pmmh(
   num_chains = 4,
   param_transform = list(lambda = "log", gamma = "log"),
   verbose = TRUE,
+  return_latent_state_est = TRUE,
   seed = 1405,
   num_cores = 4
 )
 
-chains <- result$theta_chain
+saveRDS(result_sir_example_5.1, "result_sir_example_5.1.rds")
+
+# Or load the result from a file
+# result_sir_example_5.1 <- readRDS("result_sir_example_5.1.rds")
+
+chains <- result_sir_example_5.1$theta_chain
 
 chain_1 <- chains[[1]]
 chain_2 <- chains[[2]]
@@ -321,7 +325,7 @@ ggplot(lambda_df, aes(x = value, fill = chain)) +
   theme(
     axis.title = element_text(face = "bold"),
     axis.text = element_text(size = 12),
-    panel.grid.major = element_line(size = 0.5, color = "gray80"),
+    panel.grid.major = element_line(linewidth = 0.5, color = "gray80"),
     panel.grid.minor = element_blank()
   ) +
   labs(
@@ -353,7 +357,7 @@ ggplot(gamma_df, aes(x = value, fill = chain)) +
   theme(
     axis.title = element_text(face = "bold"),
     axis.text = element_text(size = 12),
-    panel.grid.major = element_line(size = 0.5, color = "gray80"),
+    panel.grid.major = element_line(linewidth = 0.5, color = "gray80"),
     panel.grid.minor = element_blank()
   ) +
   labs(
@@ -371,6 +375,8 @@ ggsave("density_plot_gamma_sir.png",
 #########################################
 # 5. Posterior Predictive Check
 #########################################
+
+set.seed(1405)
 
 combined_df <- data.frame(
   iteration = rep(1:nrow(lambda_chains), times = 4),
@@ -423,25 +429,23 @@ ggplot() +
   scale_x_continuous(
     breaks = seq(0, 10, by = 1)
   ) +
-  theme_minimal(base_size = 16) +
+  theme_bw() +
   theme(
-    axis.title = element_text(face = "bold", size = 16),
-    axis.text = element_text(size = 14),
-    plot.title = element_text(size = 18, face = "bold", hjust = 0.5),
-    panel.grid.major = element_line(linewidth = 0.7, color = "gray90"),
-    panel.grid.minor = element_blank(),
+    axis.title = element_text(face = "bold", size = 14),
+    axis.text = element_text(size = 12),
+    plot.title = element_text(size = 16, face = "bold", hjust = 0.5),
     legend.position = "top",
     legend.title = element_blank(),
-    legend.text = element_text(size = 14),
-    plot.margin = margin(10, 20, 10, 20)
+    panel.grid = element_blank()
   )
 
 
-ggsave("posterior_predictive_check_infected.png",
-       dpi = 300,
-       width = 6.27,
-       height = 4,
-       units = "in"
+ggsave(
+  "posterior_predictive_check_infected_example_5.1.png",
+  dpi = 300,
+  width = 6.27,
+  height = 4,
+  units = "in"
 )
 
 ###########################################
@@ -453,39 +457,60 @@ ggsave("posterior_predictive_check_infected.png",
 # We sample from the posterior distribution of the parameters then simulate
 # the epidemic trajectory using the estimated parameters.
 
-# Sample from the posterior distribution of the parameters
+results_list <- list()
+
+# Loop over each chain
+for (chain_idx in seq_along(result_sir_example_5.1$latent_state_chain)) {
+  chain <- result_sir_example_5.1$latent_state_chain[[chain_idx]]
+
+  # Extract the [11,1] and [11,2] values for each matrix in the chain
+  extracted_values <- do.call(
+    rbind, lapply(chain, function(mat) round(mat[11, ]))
+  )
+
+  # Convert to a dataframe and add chain identifier
+  df <- as.data.frame(extracted_values)
+  df$chain <- chain_idx
+
+  # Store in results list
+  results_list[[chain_idx]] <- df
+}
+
+# Combine all chains into a single dataframe
+latent_est_df <- do.call(rbind, results_list)
+
+# Rename columns for clarity
+colnames(latent_est_df) <- c("S", "I", "chain")
+
+
+# Combine the latent state estimates with the sampled parameters
 
 combined_df <- data.frame(
   iteration = rep(1:nrow(lambda_chains), times = 4),
   chain = factor(rep(1:4, each = nrow(lambda_chains))),
   lambda = c(lambda_chains),
-  gamma = c(gamma_chains)
+  gamma = c(gamma_chains),
+  S = final_df$S,
+  I = final_df$I
 )
 
-num_iterations <- 10000
-sampled_df <- combined_df[
-  sample(nrow(combined_df), num_iterations, replace = TRUE),
-]
-
-# Use the estimated latent state as starting point.
-state10_est <- round(result$latent_state_estimate$mean[11, ])
-
-state10_est <- c(100, 79)
+num_iterations <- dim(combined_df)[1]
 
 future_inference_df <- data.frame(
   iteration = 1:num_iterations,
   num_days = rep(0, num_iterations),
   not_infected = rep(0, num_iterations)
 )
+
 for (i in 1:num_iterations) {
-  state <- state10_est
-  lambda <- sampled_df$lambda[i]
-  gamma <- sampled_df$gamma[i]
+  state <- as.numeric(combined_df[i, c("S", "I")])
+  lambda <- combined_df$lambda[i]
+  gamma <- combined_df$gamma[i]
 
   num_days <- 10
   while (state[2] > 0) {  # Continue until the number of infected reaches 0
     num_days <- num_days + 1
-    state <- epidemic_step(state, 1, lambda = lambda, gamma = gamma, n_total)
+    state <- epidemic_step(state, lambda = lambda, gamma = gamma, n_total)
   }
   future_inference_df$num_days[i] <- num_days
   future_inference_df$not_infected[i] <- state[1]
