@@ -105,7 +105,7 @@ prior_samples <- data.frame(
 simulate_trajectory <- function(prior_samples, t_val) {
   prior_trajectories <- list()
 
-  for (i in 1:nrow(prior_samples)) {
+  for (i in seq_len(nrow(prior_samples))) {
     phi <- prior_samples$phi[i]
     sigma_x <- prior_samples$sigma_x[i]
     sigma_y <- prior_samples$sigma_y[i]
@@ -115,7 +115,7 @@ simulate_trajectory <- function(prior_samples, t_val) {
     prior_trajectories[[i]] <- sim$y
   }
 
-  return(prior_trajectories)
+  prior_trajectories
 }
 
 # Generate the prior predictive trajectories
@@ -125,9 +125,10 @@ prior_trajectories <- simulate_trajectory(prior_samples, t_val)
 plot_data <- data.frame(
   time = rep(1:t_val, times = length(prior_trajectories) + 1),
   y = c(y_obs, unlist(prior_trajectories)),
-  type = rep(c(
-    "Observed",
-    paste0("Sampled ", 1:length(prior_trajectories))),
+  type = rep(
+    c(
+      "Observed",
+      paste0("Sampled ", seq_along(prior_trajectories))),
     each = t_val
   )
 )
@@ -174,6 +175,14 @@ ggsave(
 ###########################################
 # 5. Run pmmh on dataset
 ###########################################
+# Convert prior_samples to a list and use those as init_params for pilot chain.
+
+pilot_init_params <- split(prior_samples, seq(nrow(prior_samples)))
+pilot_init_params <- lapply(
+  pilot_init_params,
+  function(row) setNames(as.numeric(row), names(prior_samples))
+)
+
 
 result_sir_example_4.3 <- pmmh(
   y = y_obs,
@@ -182,7 +191,7 @@ result_sir_example_4.3 <- pmmh(
   transition_fn = transition_fn,
   log_likelihood_fn = log_likelihood_fn,
   log_priors = log_priors,
-  init_params = c(phi = 0.5, sigma_x = 0.5, sigma_y = 0.5),
+  pilot_init_params = pilot_init_params,
   burn_in = 500,
   num_chains = 4,
   algorithm = "SISAR",
@@ -201,7 +210,7 @@ result_sir_example_4.3 <- pmmh(
 saveRDS(result_sir_example_4.3, "result_sir_example_4.3.rds")
 
 # Or load the result from a file
-# result_sir_example_4.3 <- readRDS("result_sir_example_4.3.rds")
+result_sir_example_4.3 <- readRDS("result_sir_example_4.3.rds")
 
 ###########################################
 # 6. Posterior predictive check
@@ -213,7 +222,7 @@ set.seed(1405)
 n_ppc <- 4
 
 # Use chain 1
-posterior_samples <- as.data.frame(result_sir_example_4.3$theta_chain[[1]])
+posterior_samples <- result_sir_example_4.3$theta_chain
 
 # Sample posterior parameter values
 params <- posterior_samples[sample(nrow(posterior_samples), n_ppc), ]
@@ -222,7 +231,7 @@ params <- posterior_samples[sample(nrow(posterior_samples), n_ppc), ]
 simulate_trajectory <- function(posterior_samples, t_val) {
   ppc_trajectories <- list()
 
-  for (i in 1:nrow(posterior_samples)) {
+  for (i in seq_len(nrow(posterior_samples))) {
     phi <- posterior_samples$phi[i]
     sigma_x <- posterior_samples$sigma_x[i]
     sigma_y <- posterior_samples$sigma_y[i]
@@ -232,7 +241,7 @@ simulate_trajectory <- function(posterior_samples, t_val) {
     ppc_trajectories[[i]] <- sim$y
   }
 
-  return(ppc_trajectories)
+  ppc_trajectories
 }
 
 # Generate the posterior predictive trajectories
@@ -242,9 +251,10 @@ ppc_trajectories <- simulate_trajectory(params, t_val)
 plot_data_ppc <- data.frame(
   time = rep(1:t_val, times = length(ppc_trajectories) + 1),
   y = c(y_obs, unlist(ppc_trajectories)),
-  type = rep(c(
-    "Observed",
-    paste0("Sampled ", 1:length(ppc_trajectories))),
+  type = rep(
+    c(
+      "Observed",
+      paste0("Sampled ", seq_along(ppc_trajectories))),
     each = t_val
   )
 )
@@ -292,38 +302,7 @@ ggsave(
 # 7. Density plots
 ###########################################
 
-# Extract the posterior samples from the chain
-chain_1 <- as.data.frame(result_sir_example_4.3$theta_chain[[1]])
-chain_2 <- as.data.frame(result_sir_example_4.3$theta_chain[[2]])
-chain_3 <- as.data.frame(result_sir_example_4.3$theta_chain[[3]])
-chain_4 <- as.data.frame(result_sir_example_4.3$theta_chain[[4]])
-
-phi_chains <- cbind(
-  chain_1$phi, chain_2$phi,
-  chain_3$phi, chain_4$phi
-)
-
-sigma_x_chains <- cbind(
-  chain_1$sigma_x, chain_2$sigma_x,
-  chain_3$sigma_x, chain_4$sigma_x
-)
-
-sigma_y_chains <- cbind(
-  chain_1$sigma_y, chain_2$sigma_y,
-  chain_3$sigma_y, chain_4$sigma_y
-)
-
-phi_df <- data.frame(
-  value = c(
-    phi_chains[, 1],
-    phi_chains[, 2],
-    phi_chains[, 3],
-    phi_chains[, 4]
-  ),
-  chain = factor(rep(1:4, each = nrow(phi_chains)))
-)
-
-ggplot(phi_df, aes(x = value, fill = chain)) +
+ggplot(posterior_samples, aes(x = phi, fill = chain)) +
   geom_density(alpha = 0.4) +
   theme_minimal(base_size = 14) +
   theme(
@@ -337,24 +316,15 @@ ggplot(phi_df, aes(x = value, fill = chain)) +
     y = "Density"
   )
 
-ggsave("density_plot_phi_example_4.3.png",
-       dpi = 300,
-       width = 6.27,
-       height = 4,
-       units = "in"
+ggsave(
+  "density_plot_phi_example_4.3.png",
+  dpi = 300,
+  width = 6.27,
+  height = 4,
+  units = "in"
 )
 
-sigma_x_df <- data.frame(
-  value = c(
-    sigma_x_chains[, 1],
-    sigma_x_chains[, 2],
-    sigma_x_chains[, 3],
-    sigma_x_chains[, 4]
-  ),
-  chain = factor(rep(1:4, each = nrow(sigma_x_chains)))
-)
-
-ggplot(sigma_x_df, aes(x = value, fill = chain)) +
+ggplot(posterior_samples, aes(x = sigma_x, fill = chain)) +
   geom_density(alpha = 0.4) +
   theme_minimal(base_size = 14) +
   theme(
@@ -368,24 +338,15 @@ ggplot(sigma_x_df, aes(x = value, fill = chain)) +
     y = "Density"
   )
 
-ggsave("density_plot_sigma_x_example_4.3.png",
-       dpi = 300,
-       width = 6.27,
-       height = 4,
-       units = "in"
+ggsave(
+  "density_plot_sigma_x_example_4.3.png",
+  dpi = 300,
+  width = 6.27,
+  height = 4,
+  units = "in"
 )
 
-sigma_y_df <- data.frame(
-  value = c(
-    sigma_y_chains[, 1],
-    sigma_y_chains[, 2],
-    sigma_y_chains[, 3],
-    sigma_y_chains[, 4]
-  ),
-  chain = factor(rep(1:4, each = nrow(sigma_y_chains)))
-)
-
-ggplot(sigma_y_df, aes(x = value, fill = chain)) +
+ggplot(posterior_samples, aes(x = sigma_y, fill = chain)) +
   geom_density(alpha = 0.4) +
   theme_minimal(base_size = 14) +
   theme(
@@ -399,11 +360,12 @@ ggplot(sigma_y_df, aes(x = value, fill = chain)) +
     y = "Density"
   )
 
-ggsave("density_plot_sigma_y_example_4.3.png",
-       dpi = 300,
-       width = 6.27,
-       height = 4,
-       units = "in"
+ggsave(
+  "density_plot_sigma_y_example_4.3.png",
+  dpi = 300,
+  width = 6.27,
+  height = 4,
+  units = "in"
 )
 
 ###########################################
