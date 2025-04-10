@@ -15,7 +15,6 @@ preprocessed_data <- outbreak_data[, c("time", "in_bed")]
 preprocessed_data <- rbind(data.frame(time = 0, in_bed = 0), preprocessed_data)
 
 ggplot(preprocessed_data, aes(x = time, y = in_bed)) +
-  #geom_line(color = "#0072B2", size = 1.2) +
   geom_point(color = "#D55E00", size = 3) +
   labs(
     title = "Influenza Outbreak in Boarding School",
@@ -112,9 +111,23 @@ log_prior_gamma <- function(gamma) {
   msm::dtnorm(gamma, mean = 0, sd = 0.41, log = TRUE)
 }
 
+# 1 / phi ~ Normal+(0, 1)
+log_prior_phi <- function(phi) {
+  if (phi <= 0) return(-Inf)
+  xi <- 1 / phi
+  log_prior_xi <- msm::dtnorm(xi, mean = 0, sd = 1, log = TRUE)
+
+  # log_jacobian: |d(1/phi)/dphi| = 1/phi^2
+  log_jacobian <- -2 * log(phi)
+
+  log_prior_xi + log_jacobian
+}
+
+
 log_priors <- list(
   lambda = log_prior_lambda,
-  gamma = log_prior_gamma
+  gamma = log_prior_gamma,
+  phi = log_prior_phi
 )
 
 # --- Functions for the epidemic model ---
@@ -166,9 +179,14 @@ transition_fn_epidemic <- function(particles, lambda, gamma) {
   new_particles
 }
 
-log_likelihood_fn_epidemic <- function(y, particles) {
+log_likelihood_fn_epidemic <- function(y, particles, phi) {
   # particles is expected to be a matrix with columns (s, i)
-  dpois(y, lambda = particles[, 2], log = TRUE)
+  dnbinom(
+    y,
+    size = phi,
+    mu = particles[, 2],
+    log = TRUE
+  )
 }
 
 ###########################################
@@ -182,30 +200,37 @@ sample_gamma <- function(n) {
   msm::rtnorm(n, mean = 0, sd = 0.41, lower = 0)
 }
 
+sample_phi <- function(n) {
+  inv_phi <- msm::rtnorm(n, mean = 0, sd = 1, lower = 0)
+  1 / inv_phi
+}
+
+
 # Generate 100 samples and plot the prior predictive distribution along the
 # observed data
 prior_samples <- data.frame(
   lambda = sample_lambda(100),
-  gamma = sample_gamma(100)
+  gamma = sample_gamma(100),
+  phi = sample_phi(100)
 )
 
 # Simulate trajectories
 simulate_trajectory <- function(
-  prior_samples, n_total, init_infected, t_max
-) {
+    prior_samples, n_total, init_infected, t_max) {
   prior_trajectories <- list()
 
   for (i in seq_len(nrow(prior_samples))) {
     lambda <- prior_samples$lambda[i]
     gamma <- prior_samples$gamma[i]
+    phi <- prior_samples$phi[i]
 
-    # Simulate epidemic for each sample
     states <- simulate_epidemic(
       n_total, init_infected, lambda, gamma, t_max
     )
 
-    # Add Poisson noise to the infected counts (same as observation process)
-    noisy_infected <- rpois(length(states[, 2]), lambda = states[, 2])
+    noisy_infected <- rnbinom(
+      length(states[, 2]), size = phi, mu = states[, 2]
+    )
 
     prior_trajectories[[i]] <- noisy_infected
   }
@@ -265,7 +290,7 @@ ggplot() +
 
 # Save the plot
 ggsave(
-  "prior_predictive_check_influenza.png",
+  "prior_predictive_check_influenza_sir_negbin.png",
   dpi = 300,
   width = 6.27,
   height = 4,
@@ -276,29 +301,39 @@ ggsave(
 # 4. PMMH
 ###########################################
 
-result_influenza <- bayesSSM::pmmh(
+pilot_init_params <- split(prior_samples, seq(nrow(prior_samples)))
+pilot_init_params <- lapply(
+  pilot_init_params,
+  function(row) setNames(as.numeric(row), names(prior_samples))
+)
+
+# Use 1st 4 rows of prior_samples as initial values for the pilot chain
+pilot_init_params <- pilot_init_params[1:4]
+pilot_init_params
+
+result_influenza_sir_negbin <- bayesSSM::pmmh(
   y = observations,
   m = 10000,
   init_fn = init_fn_epidemic,
   transition_fn = transition_fn_epidemic,
   log_likelihood_fn = log_likelihood_fn_epidemic,
   log_priors = log_priors,
-  init_params = c(lambda = 0.5, gamma = 0.5),
+  pilot_init_params = pilot_init_params,
   burn_in = 500,
   num_chains = 4,
-  param_transform = list(lambda = "log", gamma = "log"),
+  param_transform = list(lambda = "log", gamma = "log", phi = "log"),
   verbose = TRUE,
   return_latent_state_est = TRUE,
   seed = 1405,
   num_cores = 4
 )
 
-saveRDS(result_influenza, file = "result_influenza.rds")
+saveRDS(result_influenza_sir_negbin, file = "result_influenza_sir_negbin.rds")
 
 # Or load the result from the saved file
-result_influenza <- readRDS("result_influenza.rds")
+result_influenza_sir_negbin <- readRDS("result_influenza_sir_negbin.rds")
 
-chains <- result_influenza$theta_chain
+chains <- result_influenza_sir_negbin$theta_chain
 
 ggplot(chains, aes(x = lambda, fill = factor(chain))) +
   geom_density(alpha = 0.4) +
@@ -315,7 +350,7 @@ ggplot(chains, aes(x = lambda, fill = factor(chain))) +
   )
 
 ggsave(
-  "density_plot_lambda_influenza.png",
+  "density_plot_lambda_influenza_sir_negbin.png",
   dpi = 300,
   width = 6.27,
   height = 4,
@@ -337,15 +372,38 @@ ggplot(chains, aes(x = gamma, fill = factor(chain))) +
   )
 
 ggsave(
-  "density_plot_gamma_influenza.png",
+  "density_plot_gamma_influenza_sir_negbin.png",
   dpi = 300,
   width = 6.27,
   height = 4,
   units = "in"
 )
 
+ggplot(chains, aes(x = phi, fill = factor(chain))) +
+  geom_density(alpha = 0.4) +
+  theme_minimal(base_size = 14) +
+  theme(
+    axis.title = element_text(face = "bold"),
+    axis.text = element_text(size = 12),
+    panel.grid.major = element_line(linewidth = 0.5, color = "gray80"),
+    panel.grid.minor = element_blank()
+  ) +
+  labs(
+    x = "Parameter Value",
+    y = "Density"
+  )
+
+ggsave(
+  "density_plot_phi_influenza_sir_negbin.png",
+  dpi = 300,
+  width = 6.27,
+  height = 4,
+  units = "in"
+)
+
+
 ###########################################
-# 5. Inference on R_0
+# 5. Inference on R_0 and recovery_time
 ###########################################
 
 chains$r0 <- chains$lambda / chains$gamma
@@ -360,6 +418,21 @@ rhat(r0_matrix)
 
 r0_mean
 r0_ci
+
+chains$recovery_time <- 1 / chains$gamma
+
+recovery_time_mean <- mean(chains$recovery_time)
+
+recovery_time_ci <- quantile(chains$recovery_time, probs = c(0.025, 0.975))
+recovery_time_matrix <- matrix(
+  chains$recovery_time, nrow = nrow(chains) / 4, ncol = 4
+)
+
+ess(recovery_time_matrix)
+rhat(recovery_time_matrix)
+
+recovery_time_mean
+recovery_time_ci
 
 
 ###########################################
@@ -424,7 +497,7 @@ ggplot() +
   )
 
 ggsave(
-  "posterior_predictive_check_influenza.png",
+  "posterior_predictive_check_influenza_sir_negbin.png",
   dpi = 300,
   width = 6.27,
   height = 4,
@@ -432,7 +505,117 @@ ggsave(
 )
 
 ###############################################
-# 7. LFO-loo-cv
+# 7. Estimating latent state (number of sick)
 ###############################################
 
-# Not coded yet ...
+s_i_est <- result_influenza_sir_negbin$latent_state_chain
+array_s_i_est <- simplify2array(lapply(s_i_est, function(x) simplify2array(x)))
+
+# Compute quantiles for each entry in the 15x2 matrix
+quantiles_s_i <- apply(
+  array_s_i_est, c(1,2),
+  function(x) quantile(x, probs = c(0.025, 0.5, 0.975))
+)
+
+# Convert to a data frame for plotting
+quantiles_s_i <- as.data.frame(quantiles_s_i)
+
+infected_quantiles <- quantiles_s_i[16:30]
+infected_quantiles <- t(infected_quantiles)
+
+infected_quantiles_df <- as.data.frame(infected_quantiles)
+infected_quantiles_df$time <- 0:(nrow(infected_quantiles_df) - 1)
+
+rownames(infected_quantiles_df) <- NULL
+
+# Remove % in the col names
+
+colnames(infected_quantiles_df) <- make.names(colnames(infected_quantiles_df))
+
+# Make ggplot
+ggplot(infected_quantiles_df, mapping = aes(x = time)) +
+  geom_ribbon(aes(ymin = X2.5., ymax = X97.5.), fill = "green", alpha = 0.35) +
+  geom_line(mapping = aes(x = time, y = X50.), color = "blue", linewidth = 1) +
+  geom_point(
+    data = preprocessed_data,
+    aes(x = time, y = in_bed),
+    color = "#D55E00",
+    size = 3,
+    shape = 16
+  ) +
+  labs(
+    x = "Day",
+    y = "Number of Infected Students",
+    title = "Estimated and Observed Number of Sick Students",
+  ) +
+  theme_bw() +
+  theme(
+    axis.title = element_text(face = "bold", size = 14),
+    axis.text = element_text(size = 12),
+    plot.title = element_text(size = 16, face = "bold", hjust = 0.5),
+    panel.grid.major = element_line(color = "gray80", linewidth = 0.5),
+    panel.grid.minor = element_line(color = "gray90", linewidth = 0.5),
+  )
+
+ggsave(
+  "latent_state_estimation_influenza_sir_negbin.png",
+  dpi = 300,
+  width = 6.27,
+  height = 4,
+  units = "in"
+)
+
+###############################################
+# 8. Prior sensitivity analysis
+###############################################
+
+# Old priors
+log_prior_lambda_old <- function(lambda) {
+  msm::dtnorm(lambda, mean = 0, sd = 0.63, lower = 0, log = TRUE)
+}
+
+log_prior_gamma_old <- function(gamma) {
+  msm::dtnorm(gamma, mean = 0, sd = 0.41, lower = 0, log = TRUE)
+}
+
+# New priors
+log_prior_lambda_new <- function(lambda) {
+  msm::dtnorm(lambda, mean = 0, sd = 1, lower = 0, log = TRUE)
+}
+
+log_prior_gamma_new <- function(gamma) {
+  msm::dtnorm(gamma, mean = 0, sd = 1, lower = 0, log = TRUE)
+}
+
+# Function to compute importance weights
+importance_weights <- function(lambda, gamma) {
+  log_w <- log_prior_lambda_new(lambda) + log_prior_gamma_new(gamma) -
+    log_prior_lambda_old(lambda) - log_prior_gamma_old(gamma)
+  exp(log_w)  # Convert to normal scale
+}
+
+# Extract posterior samples
+lambda_samples <- result_influenza_sir_negbin$theta_chain$lambda
+gamma_samples <- result_influenza_sir_negbin$theta_chain$gamma
+
+# Compute importance sampling weights
+weights <- importance_weights(lambda_samples, gamma_samples)
+
+# Normalize weights
+weights <- weights / sum(weights)
+
+# Compute weighted mean and credible intervals
+weighted_mean_lambda <- sum(weights * lambda_samples)
+weighted_mean_gamma <- sum(weights * gamma_samples)
+
+weighted_quantile <- function(x, w, probs) {
+  ord <- order(x)
+  x_sorted <- x[ord]
+  w_sorted <- w[ord]
+  cum_w <- cumsum(w_sorted) / sum(w_sorted)
+  approx(cum_w, x_sorted, xout = probs, method = "linear", rule = 2)$y
+}
+
+# Compute weighted credible intervals
+credible_interval_lambda <- weighted_quantile(lambda_samples, weights, c(0.025, 0.975))
+credible_interval_gamma <- weighted_quantile(gamma_samples, weights, c(0.025, 0.975))
