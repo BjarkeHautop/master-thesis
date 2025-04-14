@@ -597,6 +597,8 @@ importance_weights <- function(lambda, gamma) {
 # Extract posterior samples
 lambda_samples <- result_influenza_sir_negbin$theta_chain$lambda
 gamma_samples <- result_influenza_sir_negbin$theta_chain$gamma
+r0_samples <- lambda_samples / gamma_samples
+recovery_time_samples <- 1 / gamma_samples
 
 # Compute importance sampling weights
 weights <- importance_weights(lambda_samples, gamma_samples)
@@ -607,6 +609,9 @@ weights <- weights / sum(weights)
 # Compute weighted mean and credible intervals
 weighted_mean_lambda <- sum(weights * lambda_samples)
 weighted_mean_gamma <- sum(weights * gamma_samples)
+weighted_mean_r0 <- sum(weights * r0_samples)
+weighted_mean_recovery_time <- sum(weights * recovery_time_samples)
+
 
 weighted_quantile <- function(x, w, probs) {
   ord <- order(x)
@@ -617,5 +622,25 @@ weighted_quantile <- function(x, w, probs) {
 }
 
 # Compute weighted credible intervals
-credible_interval_lambda <- weighted_quantile(lambda_samples, weights, c(0.025, 0.975))
-credible_interval_gamma <- weighted_quantile(gamma_samples, weights, c(0.025, 0.975))
+credible_interval_lambda <- weighted_quantile(
+  lambda_samples, weights, c(0.025, 0.975)
+)
+credible_interval_gamma <- weighted_quantile(
+  gamma_samples, weights, c(0.025, 0.975)
+)
+credible_interval_r0 <- weighted_quantile(
+  r0_samples, weights, c(0.025, 0.975)
+)
+credible_interval_recovery_time <- weighted_quantile(
+  recovery_time_samples, weights, c(0.025, 0.975)
+)
+
+weighted_mean_lambda
+weighted_mean_gamma
+weighted_mean_r0
+weighted_mean_recovery_time
+
+credible_interval_lambda
+credible_interval_gamma
+credible_interval_r0
+credible_interval_recovery_time
