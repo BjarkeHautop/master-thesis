@@ -331,7 +331,7 @@ result_sir_example_5.1_negbin <- bayesSSM::pmmh(
   log_likelihood_fn = log_likelihood_fn_epidemic,
   log_priors = log_priors,
   pilot_init_params = pilot_init_params,
-  burn_in = 100,
+  burn_in = 500,
   num_chains = 4,
   param_transform = list(lambda = "log", gamma = "log", phi = "log"),
   verbose = TRUE,
