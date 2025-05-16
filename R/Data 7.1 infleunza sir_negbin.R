@@ -795,7 +795,15 @@ mle_obs <- if2_log_epidemic(
   rw_sd = c(lambda = 0.1, gamma = 0.1, phi = 0.1),
   cooling_fraction = 0.95
 )
-mle_obs
+
+mle_r0 <- mle_obs[["lambda"]] / mle_obs[["gamma"]]
+mle_recovery_time <- 1 / mle_obs[["gamma"]]
+cat("MLE for lambda:", mle_obs[["lambda"]], "\n")
+cat("MLE for gamma:", mle_obs[["gamma"]], "\n")
+cat("MLE for r0:", mle_r0, "\n")
+cat("MLE for recovery time:", mle_recovery_time, "\n")
+
+
 
 # Bootstrap
 B <- 200
