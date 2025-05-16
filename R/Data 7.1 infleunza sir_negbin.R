@@ -806,7 +806,7 @@ for (b in 1:B) {
   yb <- rep(0, length(observations))
 
   # If disease dies out immediately MLE doesn't exist. Make a new sample
-  while(sum(yb) == 0) {
+  while (all(yb[10:14] == 0)) {
     sim_states <- simulate_epidemic(
       n_total, init_infected, mle_obs[["lambda"]], mle_obs[["gamma"]], t_max
     )
@@ -850,3 +850,16 @@ r0_ci <- quantile(boot.mat$r0, probs = c(0.025, 0.975))
 
 recovery_time_mle <- mean(boot.mat$recovery_time)
 recovery_time_ci <- quantile(boot.mat$recovery_time, probs = c(0.025, 0.975))
+
+# Print results
+cat("MLE for lambda:", lambda_mle, "\n")
+cat("95% CI for lambda:", lambda_ci, "\n")
+
+cat("MLE for gamma:", gamma_mle, "\n")
+cat("95% CI for gamma:", gamma_ci, "\n")
+
+cat("MLE for R0:", r0_mle, "\n")
+cat("95% CI for R0:", r0_ci, "\n")
+
+cat("MLE for recovery time:", recovery_time_mle, "\n")
+cat("95% CI for recovery time:", recovery_time_ci, "\n")
