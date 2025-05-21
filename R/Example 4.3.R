@@ -1,4 +1,6 @@
 library(ggplot2)
+library(ggdist)
+
 library(tibble)
 library(extraDistr)
 
@@ -10,16 +12,16 @@ set.seed(1405)
 # 1. Example Setup: Non-linear Gaussian SSM
 ###########################################
 # SSM definitions:
-#    X_1 ~ N(0,1)
-#    X_t = phi * X_{t-1} + sin(X_{t-1}) + sigma_x * V_t,   V_t ~ N(0,1)
-#    Y_t = X_t + sigma_y * W_t,              W_t ~ N(0,1)
+#    X_0 ~ N(0,1)
+#    X_t = phi * X_{t-1} + sin(X_{t-1}) + sigma_x * V_t,   V_t ~ N(0,1), t>=1
+#    Y_t = X_t + sigma_y * W_t,              W_t ~ N(0,1), t>=1
 
-init_fn <- function(particles) {
-  rnorm(particles, mean = 0, sd = 1)
+init_fn <- function(num_particles) {
+  rnorm(num_particles, mean = 0, sd = 1)
 }
 
 transition_fn <- function(particles, phi, sigma_x) {
-  phi * particles + sin(particles) +
+  phi * particles + tanh(particles) +
     rnorm(length(particles), mean = 0, sd = sigma_x)
 }
 
@@ -28,14 +30,17 @@ log_likelihood_fn <- function(y, particles, sigma_y) {
 }
 
 simulate_ssm <- function(t_val, phi, sigma_x, sigma_y) {
+  init_state <- rnorm(1, mean = 0, sd = 1)
   x <- numeric(t_val)
   y <- numeric(t_val)
-  x[1] <- rnorm(1, mean = 0, sd = sigma_x)
-  y[1] <- rnorm(1, mean = x[1], sd = sigma_y)
+  x[1] <- phi * init_state + tanh(init_state) +
+    rnorm(1, mean = 0, sd = sigma_x)
+  y[1] <- x[1] + rnorm(1, mean = 0, sd = sigma_y)
   for (t in 2:t_val) {
-    x[t] <- phi * x[t - 1] + sin(x[t - 1]) + rnorm(1, mean = 0, sd = sigma_x)
+    x[t] <- phi * x[t - 1] + tanh(x[t - 1]) + rnorm(1, mean = 0, sd = sigma_x)
     y[t] <- x[t] + rnorm(1, mean = 0, sd = sigma_y)
   }
+  x <- c(init_state, x)
   list(x = x, y = y)
 }
 
@@ -52,13 +57,37 @@ sim_data <- simulate_ssm(t_val, phi_true, sigma_x_true, sigma_y_true)
 x_true <- sim_data$x
 y_obs <- sim_data$y
 
+res_test <- particle_filter(
+  y = y_obs,
+  num_particles = 1000,
+  init_fn = init_fn,
+  transition_fn = transition_fn,
+  log_likelihood_fn = log_likelihood_fn,
+  phi = phi_true,
+  sigma_x = sigma_x_true,
+  sigma_y = sigma_y_true
+)
+
+res_test$loglike
+
+res_test_new <- particle_filter(
+  y = y_obs,
+  num_particles = 1000,
+  init_fn = init_fn,
+  transition_fn = transition_fn,
+  log_likelihood_fn = log_likelihood_fn,
+  phi = 0.66,
+  sigma_x = 1.2,
+  sigma_y = 0.4
+)
+
 ###########################################
 # 3. Define functions for the priors
 ###########################################
 
-# Standard normal for phi
+# Standard uniform for phi
 log_prior_phi <- function(phi) {
-  stats::dnorm(phi, mean = 0, sd = 1, log = TRUE)
+  stats::dunif(phi, min = 0, max = 1, log = TRUE)
 }
 
 # Half-normal for sigma_x and sigma_y
@@ -78,12 +107,12 @@ log_priors <- list(
 
 
 ###########################################
-# 4. Prior predictice check
+# 4. Prior predictive check
 ###########################################
 
 # Define prior sampling functions for phi, sigma_x, and sigma_y
 sample_phi <- function(n) {
-  rnorm(n, mean = 0, sd = 1)
+  runif(n, min = 0, max = 1)
 }
 
 sample_sigma_x <- function(n) {
@@ -94,11 +123,11 @@ sample_sigma_y <- function(n) {
   extraDistr::rhnorm(n)
 }
 
-# Generate 4 prior samples
+# Generate 100 prior samples
 prior_samples <- data.frame(
-  phi = sample_phi(4),
-  sigma_x = sample_sigma_x(4),
-  sigma_y = sample_sigma_y(4)
+  phi = sample_phi(100),
+  sigma_x = sample_sigma_x(100),
+  sigma_y = sample_sigma_y(100)
 )
 
 # Simulate trajectories for the prior predictive check
@@ -183,10 +212,12 @@ pilot_init_params <- lapply(
   function(row) setNames(as.numeric(row), names(prior_samples))
 )
 
+# Use first 4 samples for the pilot chain
+pilot_init_params <- pilot_init_params[1:4]
 
 result_sir_example_4.3 <- pmmh(
   y = y_obs,
-  m = 10000,
+  m = 40000,
   init_fn = init_fn,
   transition_fn = transition_fn,
   log_likelihood_fn = log_likelihood_fn,
@@ -197,15 +228,16 @@ result_sir_example_4.3 <- pmmh(
   algorithm = "SISAR",
   resample_fn = "stratified",
   param_transform = list(
-    phi = "identity",
+    phi = "logit",
     sigma_x = "log",
     sigma_y = "log"
   ),
   verbose = TRUE,
   return_latent_state_est = TRUE,
-  seed = 1405,
+  seed = 1,
   num_cores = 4
 )
+
 
 saveRDS(result_sir_example_4.3, "result_sir_example_4.3.rds")
 
@@ -219,13 +251,14 @@ result_sir_example_4.3 <- readRDS("result_sir_example_4.3.rds")
 set.seed(1405)
 
 # Number of posterior predictive simulations to generate:
-n_ppc <- 4
+n_ppc <- 100
 
-# Use chain 1
-posterior_samples <- result_sir_example_4.3$theta_chain
+chains <- result_sir_example_4.3$theta_chain
 
-# Sample posterior parameter values
-params <- posterior_samples[sample(nrow(posterior_samples), n_ppc), ]
+num_iterations <- 100
+sampled_df <- chains[
+  sample(nrow(chains), num_iterations, replace = FALSE),
+]
 
 # Simulate posterior predictive trajectories
 simulate_trajectory <- function(posterior_samples, t_val) {
@@ -245,7 +278,7 @@ simulate_trajectory <- function(posterior_samples, t_val) {
 }
 
 # Generate the posterior predictive trajectories
-ppc_trajectories <- simulate_trajectory(params, t_val)
+ppc_trajectories <- simulate_trajectory(sampled_df, t_val)
 
 # Prepare data for plotting
 plot_data_ppc <- data.frame(
@@ -302,7 +335,7 @@ ggsave(
 # 7. Density plots
 ###########################################
 
-ggplot(posterior_samples, aes(x = phi, fill = chain)) +
+ggplot(chains, aes(x = phi, fill = chain)) +
   geom_density(alpha = 0.4) +
   theme_minimal(base_size = 14) +
   theme(
@@ -324,7 +357,7 @@ ggsave(
   units = "in"
 )
 
-ggplot(posterior_samples, aes(x = sigma_x, fill = chain)) +
+ggplot(chains, aes(x = sigma_x, fill = chain)) +
   geom_density(alpha = 0.4) +
   theme_minimal(base_size = 14) +
   theme(
@@ -346,7 +379,7 @@ ggsave(
   units = "in"
 )
 
-ggplot(posterior_samples, aes(x = sigma_y, fill = chain)) +
+ggplot(chains, aes(x = sigma_y, fill = chain)) +
   geom_density(alpha = 0.4) +
   theme_minimal(base_size = 14) +
   theme(
@@ -373,3 +406,106 @@ ggsave(
 ###########################################
 
 print(result_sir_example_4.3)
+
+ggplot(chains, aes(x = phi, y = 0)) +
+  stat_halfeye(
+    point_interval = "mean_qi",
+    .width = 0.95,
+    slab_fill         = "#3B83BD80",
+    slab_color        = "NA",
+    slab_alpha        = 0.6,
+    interval_size     = 1.2,
+    point_size        = 2.5,
+    point_color       = "black",
+    interval_color    = "black"
+  ) +
+  theme_bw(base_size = 14) +
+  theme(
+    panel.border        = element_rect(linewidth = 0.8, colour = "black"),
+    panel.grid.major    = element_line(linewidth = 0.4, colour = "grey85"),
+    panel.grid.minor    = element_blank(),
+    axis.title.y        = element_blank(),
+    axis.text.y         = element_blank(),
+    axis.ticks.y        = element_blank(),
+    axis.title.x = element_text(face = "bold", size = 14)
+  ) +
+  labs(
+    x = "Parameter Value"
+  )
+
+ggsave(
+  "combined_posterior_density_plot_phi_example_4.3.png",
+  dpi = 300,
+  width = 6.27,
+  height = 4,
+  units = "in"
+)
+
+ggplot(chains, aes(x = sigma_x, y = 0)) +
+  stat_halfeye(
+    point_interval = "mean_qi",
+    .width = 0.95,
+    slab_fill         = "#3B83BD80",
+    slab_color        = "NA",
+    slab_alpha        = 0.6,
+    interval_size     = 1.2,
+    point_size        = 2.5,
+    point_color       = "black",
+    interval_color    = "black"
+  ) +
+  theme_bw(base_size = 14) +
+  theme(
+    panel.border        = element_rect(linewidth = 0.8, colour = "black"),
+    panel.grid.major    = element_line(linewidth = 0.4, colour = "grey85"),
+    panel.grid.minor    = element_blank(),
+    axis.title.y        = element_blank(),
+    axis.text.y         = element_blank(),
+    axis.ticks.y        = element_blank(),
+    axis.title.x = element_text(face = "bold", size = 14)
+  ) +
+  labs(
+    x = "Parameter Value"
+  )
+
+ggsave(
+  "combined_posterior_density_plot_sigma_x_example_4.3.png",
+  dpi = 300,
+  width = 6.27,
+  height = 4,
+  units = "in"
+)
+
+
+ggplot(chains, aes(x = sigma_y, y = 0)) +
+  stat_halfeye(
+    point_interval = "mean_qi",
+    .width = 0.95,
+    slab_fill         = "#3B83BD80",
+    slab_color        = "NA",
+    slab_alpha        = 0.6,
+    interval_size     = 1.2,
+    point_size        = 2.5,
+    point_color       = "black",
+    interval_color    = "black"
+  ) +
+  theme_bw(base_size = 14) +
+  theme(
+    panel.border        = element_rect(linewidth = 0.8, colour = "black"),
+    panel.grid.major    = element_line(linewidth = 0.4, colour = "grey85"),
+    panel.grid.minor    = element_blank(),
+    axis.title.y        = element_blank(),
+    axis.text.y         = element_blank(),
+    axis.ticks.y        = element_blank(),
+    axis.title.x = element_text(face = "bold", size = 14)
+  ) +
+  labs(
+    x = "Parameter Value"
+  )
+
+ggsave(
+  "combined_posterior_density_plot_sigma_y_example_4.3.png",
+  dpi = 300,
+  width = 6.27,
+  height = 4,
+  units = "in"
+)
