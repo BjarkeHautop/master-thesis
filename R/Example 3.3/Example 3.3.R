@@ -2,7 +2,7 @@ library(ggplot2)
 library(tibble)
 library(tidyr)
 library(dplyr)
-library(bayesSSM)
+library(bayesSSM) # My R package, see https://bjarkehautop.github.io/bayesSSM/
 set.seed(1405)
 
 ###########################################
