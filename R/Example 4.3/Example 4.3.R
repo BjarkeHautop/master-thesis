@@ -21,7 +21,7 @@ init_fn <- function(num_particles) {
 }
 
 transition_fn <- function(particles, phi, sigma_x) {
-  phi * particles + tanh(particles) +
+  phi * particles + sin(particles) +
     rnorm(length(particles), mean = 0, sd = sigma_x)
 }
 
@@ -33,11 +33,11 @@ simulate_ssm <- function(t_val, phi, sigma_x, sigma_y) {
   init_state <- rnorm(1, mean = 0, sd = 1)
   x <- numeric(t_val)
   y <- numeric(t_val)
-  x[1] <- phi * init_state + tanh(init_state) +
+  x[1] <- phi * init_state + sin(init_state) +
     rnorm(1, mean = 0, sd = sigma_x)
   y[1] <- x[1] + rnorm(1, mean = 0, sd = sigma_y)
   for (t in 2:t_val) {
-    x[t] <- phi * x[t - 1] + tanh(x[t - 1]) + rnorm(1, mean = 0, sd = sigma_x)
+    x[t] <- phi * x[t - 1] + sin(x[t - 1]) + rnorm(1, mean = 0, sd = sigma_x)
     y[t] <- x[t] + rnorm(1, mean = 0, sd = sigma_y)
   }
   x <- c(init_state, x)
@@ -87,7 +87,7 @@ res_test_new <- particle_filter(
 
 # Standard uniform for phi
 log_prior_phi <- function(phi) {
-  stats::dunif(phi, min = 0, max = 1, log = TRUE)
+  stats::dunif(phi, min = -1, max = 1, log = TRUE)
 }
 
 # Half-normal for sigma_x and sigma_y
@@ -112,7 +112,7 @@ log_priors <- list(
 
 # Define prior sampling functions for phi, sigma_x, and sigma_y
 sample_phi <- function(n) {
-  runif(n, min = 0, max = 1)
+  runif(n, min = -1, max = 1)
 }
 
 sample_sigma_x <- function(n) {
@@ -217,7 +217,7 @@ pilot_init_params <- pilot_init_params[1:4]
 
 result_sir_example_4.3 <- pmmh(
   y = y_obs,
-  m = 40000,
+  m = 50000,
   init_fn = init_fn,
   transition_fn = transition_fn,
   log_likelihood_fn = log_likelihood_fn,
@@ -228,14 +228,14 @@ result_sir_example_4.3 <- pmmh(
   algorithm = "SISAR",
   resample_fn = "stratified",
   param_transform = list(
-    phi = "logit",
+    phi = "identity",
     sigma_x = "log",
     sigma_y = "log"
   ),
   verbose = TRUE,
   return_latent_state_est = TRUE,
-  seed = 1,
-  num_cores = 4
+  seed = 1405,
+  num_cores = 1
 )
 
 
@@ -509,3 +509,33 @@ ggsave(
   height = 4,
   units = "in"
 )
+
+###########################################
+# 9. Latent state
+###########################################
+
+# Get number of outer lists and particles per list
+n_lists <- length(result_sir_example_4.3$latent_state_chain)
+n_particles <- length(result_sir_example_4.3$latent_state_chain[[1]])
+chain_length <- length(result_sir_example_4.3$latent_state_chain[[1]][[1]])
+
+# Initialize matrix to store all chains (rows: 40000, columns: chain_length)
+all_chains_matrix <- matrix(NA, nrow = n_lists * n_particles, ncol = chain_length)
+
+# Fill the matrix with chains
+row_idx <- 1
+for (l in 1:n_lists) {
+  for (p in 1:n_particles) {
+    all_chains_matrix[row_idx, ] <- result_sir_example_4.3$latent_state_chain[[l]][[p]]
+    row_idx <- row_idx + 1
+  }
+}
+
+# Compute mean for each time step across all 40000 chains
+means <- colMeans(all_chains_matrix)
+
+rmse <- function(est, true) sqrt(mean((est - true)^2))
+
+rmse_value <- rmse(means, x_true)
+
+cat("RMSE of the latent state estimate:", rmse_value, "\n")
