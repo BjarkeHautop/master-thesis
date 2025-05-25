@@ -531,7 +531,6 @@ for (l in 1:n_lists) {
   }
 }
 
-# Compute mean for each time step across all 40000 chains
 means <- colMeans(all_chains_matrix)
 
 rmse <- function(est, true) sqrt(mean((est - true)^2))
