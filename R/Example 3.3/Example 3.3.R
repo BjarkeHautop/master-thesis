@@ -2,7 +2,7 @@ library(ggplot2)
 library(tibble)
 library(tidyr)
 library(dplyr)
-library(bayesSSM) # My R package, see https://bjarkehautop.github.io/bayesSSM/
+library(bayesSSM)
 set.seed(1405)
 
 ###########################################
@@ -75,11 +75,11 @@ backward_smoothing <- function(
 ) {
   t_len <- nrow(particles_history)
   n <- ncol(particles_history)
-  
+
   # Initialize smoothing weights at time t as the filtering weights at t.
   smooth_weights <- matrix(0, nrow = t_len, ncol = n)
   smooth_weights[t_len, ] <- weights_history[t_len, ]
-  
+
   # Backward recursion: for t = t-1 down to 1.
   for (t in (t_len - 1):1) {
     for (i in 1:n) {
@@ -97,13 +97,13 @@ backward_smoothing <- function(
     # Normalize the smoothing weights at time t.
     smooth_weights[t, ] <- smooth_weights[t, ] / sum(smooth_weights[t, ])
   }
-  
+
   # Compute the smoothed state estimate for each time point.
   smoothed_est <- numeric(t_len)
   for (t in 1:t_len) {
     smoothed_est[t] <- sum(particles_history[t, ] * smooth_weights[t, ])
   }
-  
+
   list(smoothed_est = smoothed_est, smooth_weights = smooth_weights)
 }
 
@@ -161,7 +161,11 @@ df_long$Method <- recode(
 
 ggplot(df_long, aes(x = time, y = State, color = Method, linetype = Method)) +
   geom_line(linewidth = 1.2, alpha = 0.8) +
-  labs(title = "Latent State, Filtering & Smoothing Estimates", y = "State") +
+  labs(
+    title = "Latent State, Filtering & Smoothing Estimates",
+    x = "Time",
+    y = "State"
+  ) +
   scale_color_viridis_d(
     name = "Estimation Method",
     option = "plasma"
