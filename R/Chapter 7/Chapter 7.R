@@ -450,9 +450,11 @@ ggplot(chains, aes(x = lambda, y = 0)) +
     axis.title.y        = element_blank(),
     axis.text.y         = element_blank(),
     axis.ticks.y        = element_blank(),
-    axis.title.x = element_text(face = "bold", size = 14)
+    axis.title.x = element_text(face = "bold", size = 14),
+    plot.title          = element_text(face = "bold", hjust = 0.5, size = 16)
   ) +
   labs(
+    title = "Posterior Density of Transmission Rate λ",
     x = "Parameter Value"
   )
 
@@ -484,9 +486,11 @@ ggplot(chains, aes(x = gamma, y = 0)) +
     axis.title.y        = element_blank(),
     axis.text.y         = element_blank(),
     axis.ticks.y        = element_blank(),
-    axis.title.x = element_text(face = "bold", size = 14)
+    axis.title.x = element_text(face = "bold", size = 14),
+    plot.title          = element_text(face = "bold", hjust = 0.5, size = 16)
   ) +
   labs(
+    title = "Posterior Density of Recovery Rate γ",
     x = "Parameter Value"
   )
 
@@ -554,9 +558,11 @@ ggplot(chains, aes(x = r0, y = 0)) +
     axis.title.y        = element_blank(),
     axis.text.y         = element_blank(),
     axis.ticks.y        = element_blank(),
-    axis.title.x = element_text(face = "bold", size = 14)
+    axis.title.x = element_text(face = "bold", size = 14),
+    plot.title          = element_text(face = "bold", hjust = 0.5, size = 16)
   ) +
   labs(
+    title = "Posterior Density of Basic Reproduction Number R₀",
     x = "Parameter Value"
   )
 
@@ -588,9 +594,11 @@ ggplot(chains, aes(x = recovery_time, y = 0)) +
     axis.title.y        = element_blank(),
     axis.text.y         = element_blank(),
     axis.ticks.y        = element_blank(),
-    axis.title.x = element_text(face = "bold", size = 14)
+    axis.title.x = element_text(face = "bold", size = 14),
+    plot.title          = element_text(face = "bold", hjust = 0.5, size = 16)
   ) +
   labs(
+    title = "Posterior Density of Mean Recovery Time 1/γ",
     x = "Parameter Value"
   )
 
