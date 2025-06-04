@@ -112,11 +112,10 @@ plot_epidemic_data <- function(data_long, t_max) {
     ) +
     theme_bw() +
     theme(
-      axis.title = element_text(size = 14, face = "bold"),
-      axis.text = element_text(size = 12),
-      plot.title = element_text(size = 16, face = "bold", hjust = 0.5),
-      legend.title = element_text(size = 14),
-      legend.text = element_text(size = 12),
+      axis.title = element_text(face = "bold"),
+      plot.title = element_text(face = "bold", hjust = 0.5),
+      legend.title = element_text(),
+      legend.text = element_text(),
       legend.position = "top",
     ) +
     scale_x_continuous(breaks = seq(1, t_max, by = 1))
@@ -341,9 +340,8 @@ ggplot() +
   ) +
   theme_bw() +
   theme(
-    axis.title = element_text(face = "bold", size = 14),
-    axis.text = element_text(size = 12),
-    plot.title = element_text(size = 16, face = "bold", hjust = 0.5),
+    axis.title = element_text(face = "bold"),
+    plot.title = element_text(face = "bold", hjust = 0.5),
     legend.position = "top",
     legend.title = element_blank(),
     panel.grid = element_blank()
@@ -402,10 +400,9 @@ chains <- result_sir_example_6.1_negbin$theta_chain
 
 ggplot(chains, aes(x = lambda, fill = factor(chain))) +
   geom_density(alpha = 0.4) +
-  theme_minimal(base_size = 14) +
+  theme_minimal() +
   theme(
     axis.title = element_text(face = "bold"),
-    axis.text = element_text(size = 12),
     panel.grid.major = element_line(linewidth = 0.5, color = "gray80"),
     panel.grid.minor = element_blank()
   ) +
@@ -424,10 +421,9 @@ ggsave(
 
 ggplot(chains, aes(x = gamma, fill = factor(chain))) +
   geom_density(alpha = 0.4) +
-  theme_minimal(base_size = 14) +
+  theme_minimal() +
   theme(
     axis.title = element_text(face = "bold"),
-    axis.text = element_text(size = 12),
     panel.grid.major = element_line(linewidth = 0.5, color = "gray80"),
     panel.grid.minor = element_blank()
   ) +
@@ -446,10 +442,9 @@ ggsave(
 
 ggplot(chains, aes(x = phi, fill = factor(chain))) +
   geom_density(alpha = 0.4) +
-  theme_minimal(base_size = 14) +
+  theme_minimal() +
   theme(
     axis.title = element_text(face = "bold"),
-    axis.text = element_text(size = 12),
     panel.grid.major = element_line(linewidth = 0.5, color = "gray80"),
     panel.grid.minor = element_blank()
   ) +
@@ -500,14 +495,14 @@ ggplot() +
     aes(x = time, y = infected, group = type),
     color = "skyblue",
     alpha = 0.7,
-    linewidth = 1.2,
+    linewidth = 1,
     linetype = "dashed"
   ) +
   geom_line(
     data = subset(plot_data_posterior, type == "Observed"),
     aes(x = time, y = infected),
     color = "darkblue",
-    linewidth = 1.5
+    linewidth = 1
   ) +
   labs(
     x = "Time (Days)",
@@ -519,9 +514,8 @@ ggplot() +
   ) +
   theme_bw() +
   theme(
-    axis.title = element_text(face = "bold", size = 14),
-    axis.text = element_text(size = 12),
-    plot.title = element_text(size = 16, face = "bold", hjust = 0.5),
+    axis.title = element_text(face = "bold"),
+    plot.title = element_text(face = "bold", hjust = 0.5),
     legend.position = "top",
     legend.title = element_blank(),
     panel.grid = element_blank()
