@@ -160,11 +160,11 @@ df_long$Method <- recode(
 )
 
 ggplot(df_long, aes(x = time, y = State, color = Method, linetype = Method)) +
-  geom_line(linewidth = 1.2, alpha = 0.8) +
+  geom_line(linewidth = 1, alpha = 0.8) +
   labs(
     title = "Latent State, Filtering & Smoothing Estimates",
     x = "Time",
-    y = "State"
+    y = "State Value"
   ) +
   scale_color_viridis_d(
     name = "Estimation Method",
@@ -175,12 +175,9 @@ ggplot(df_long, aes(x = time, y = State, color = Method, linetype = Method)) +
   ) +
   theme_bw() +
   theme(
-    axis.title = element_text(size = 14, face = "bold"),
-    axis.text = element_text(size = 12),
+    axis.title = element_text(face = "bold"),
     legend.position = "top",
-    legend.title = element_text(size = 12),
-    legend.text = element_text(size = 10),
-    plot.title = element_text(size = 16, face = "bold", hjust = 0.5),
+    plot.title = element_text(face = "bold", hjust = 0.5),
     panel.grid = element_blank()
   ) +
   guides(linetype = "none")
