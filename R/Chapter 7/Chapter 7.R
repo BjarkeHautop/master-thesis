@@ -964,10 +964,8 @@ boot.mat <- readRDS("boot_mat.rds")
 boot.mat
 
 # Compute the mean and 95% CI
-lambda_mle <- mean(boot.mat[, 1])
 lambda_ci <- quantile(boot.mat[, 1], probs = c(0.025, 0.975))
 
-gamma_mle <- mean(boot.mat[, 2])
 gamma_ci <- quantile(boot.mat[, 2], probs = c(0.025, 0.975))
 
 # Compute R0 and recovery time
@@ -975,21 +973,12 @@ boot.mat <- as.data.frame(boot.mat)
 boot.mat$r0 <- boot.mat[, 1] / boot.mat[, 2]
 boot.mat$recovery_time <- 1 / boot.mat[, 2]
 
-r0_mle <- mean(boot.mat$r0)
 r0_ci <- quantile(boot.mat$r0, probs = c(0.025, 0.975))
 
-recovery_time_mle <- mean(boot.mat$recovery_time)
 recovery_time_ci <- quantile(boot.mat$recovery_time, probs = c(0.025, 0.975))
 
 # Print results
-cat("MLE for lambda:", lambda_mle, "\n")
 cat("95% CI for lambda:", lambda_ci, "\n")
-
-cat("MLE for gamma:", gamma_mle, "\n")
 cat("95% CI for gamma:", gamma_ci, "\n")
-
-cat("MLE for R0:", r0_mle, "\n")
 cat("95% CI for R0:", r0_ci, "\n")
-
-cat("MLE for recovery time:", recovery_time_mle, "\n")
 cat("95% CI for recovery time:", recovery_time_ci, "\n")
