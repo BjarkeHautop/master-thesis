@@ -1,6 +1,6 @@
 library(ggplot2)
 library(tibble)
-library(bayesSSM) # My R package see https://bjarkehautop.github.io/bayesSSM/
+library(bayesSSM)
 
 set.seed(1405)
 
@@ -66,16 +66,15 @@ df <- tibble(
 
 # Plot
 ggplot(df, aes(x = time)) +
-  geom_line(aes(y = x_true, color = "X_t"), linewidth = 1.2) +
+  geom_line(aes(y = x_true, color = "X_t"), linewidth = 1) +
   geom_point(aes(y = y_obs, color = "Y_t"), size = 1.8, alpha = 0.5) +
   scale_color_viridis_d(option = "plasma", begin = 0.2, end = 0.8) +
   labs(title = "Latent and Observed States Over Time",
        x = "Time", y = "State Value", color = "State Type") +
   theme_bw() +
   theme(
-    axis.title = element_text(size = 14, face = "bold"),
-    axis.text = element_text(size = 12),
-    plot.title = element_text(size = 16, face = "bold", hjust = 0.5),
+    axis.title = element_text(face = "bold"),
+    plot.title = element_text(face = "bold", hjust = 0.5),
     legend.position = "none",
     panel.grid = element_blank()
   )
@@ -145,18 +144,15 @@ df_state <- data.frame(
 )
 
 ggplot(df_state, aes(x = Time, y = State, color = Method, linetype = Method)) +
-  geom_line(linewidth = 1.2, alpha = 0.8) +
-  labs(title = "Latent States and Particle Filter Estimates", y = "State") +
+  geom_line(linewidth = 1, alpha = 0.8) +
+  labs(title = "Latent States and Particle Filter Estimates", y = "State Value") +
   scale_color_viridis_d(option = "plasma") +
   scale_linetype_manual(values = c("solid", "solid", "solid", "solid")) +
   theme_bw() +
   theme(
-    axis.title = element_text(size = 14, face = "bold"),
-    axis.text = element_text(size = 12),
+    axis.title = element_text(face = "bold"),
     legend.position = "top",
-    legend.title = element_text(size = 12),
-    legend.text = element_text(size = 10),
-    plot.title = element_text(size = 16, face = "bold", hjust = 0.5),
+    plot.title = element_text(face = "bold", hjust = 0.5),
     panel.grid = element_blank()
   )
 
@@ -256,4 +252,3 @@ p_rmse <- ggplot(df_rmse, aes(x = Method, y = rmse_mean, fill = Method)) +
   ) +
   scale_fill_manual(values = c("red", "blue", "green"))
 print(p_rmse)
-
