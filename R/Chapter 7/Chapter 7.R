@@ -24,9 +24,8 @@ ggplot(preprocessed_data, aes(x = time, y = in_bed)) +
   ) +
   theme_bw() +
   theme(
-    axis.title = element_text(size = 14, face = "bold"),
-    axis.text = element_text(size = 12),
-    plot.title = element_text(size = 16, face = "bold", hjust = 0.5),
+    axis.title = element_text(face = "bold"),
+    plot.title = element_text(face = "bold", hjust = 0.5),
     legend.position = "none"
   ) +
   scale_x_continuous(breaks = 1:14)
@@ -288,14 +287,14 @@ ggplot() +
     aes(x = time, y = infected, group = type),
     color = "skyblue",
     alpha = 0.7,
-    linewidth = 1.2,
+    linewidth = 1,
     linetype = "dashed"
   ) +
   geom_line(
     data = plot_data[plot_data$type == "Observed", ],
     aes(x = time, y = infected),
     color = "darkblue",
-    linewidth = 1.5
+    linewidth = 1
   ) +
   labs(
     x = "Time (Days)",
@@ -307,9 +306,8 @@ ggplot() +
   ) +
   theme_bw() +
   theme(
-    axis.title = element_text(face = "bold", size = 14),
-    axis.text = element_text(size = 12),
-    plot.title = element_text(size = 16, face = "bold", hjust = 0.5),
+    axis.title = element_text(face = "bold"),
+    plot.title = element_text(face = "bold", hjust = 0.5),
     legend.position = "top",
     legend.title = element_blank(),
     panel.grid = element_blank()
@@ -364,10 +362,9 @@ chains <- result_influenza_sir_negbin$theta_chain
 
 ggplot(chains, aes(x = lambda, fill = chain)) +
   geom_density(alpha = 0.4) +
-  theme_minimal(base_size = 14) +
+  theme_minimal() +
   theme(
     axis.title = element_text(face = "bold"),
-    axis.text = element_text(size = 12),
     panel.grid.major = element_line(linewidth = 0.5, color = "gray80"),
     panel.grid.minor = element_blank()
   ) +
@@ -386,10 +383,9 @@ ggsave(
 
 ggplot(chains, aes(x = gamma, fill = chain)) +
   geom_density(alpha = 0.4) +
-  theme_minimal(base_size = 14) +
+  theme_minimal() +
   theme(
     axis.title = element_text(face = "bold"),
-    axis.text = element_text(size = 12),
     panel.grid.major = element_line(linewidth = 0.5, color = "gray80"),
     panel.grid.minor = element_blank()
   ) +
@@ -408,10 +404,9 @@ ggsave(
 
 ggplot(chains, aes(x = phi, fill = factor(chain))) +
   geom_density(alpha = 0.4) +
-  theme_minimal(base_size = 14) +
+  theme_minimal() +
   theme(
     axis.title = element_text(face = "bold"),
-    axis.text = element_text(size = 12),
     panel.grid.major = element_line(linewidth = 0.5, color = "gray80"),
     panel.grid.minor = element_blank()
   ) +
@@ -442,20 +437,19 @@ ggplot(chains, aes(x = lambda, y = 0)) +
     point_color       = "black",
     interval_color    = "black"
   ) +
-  theme_bw(base_size = 14) +
+  theme_bw() +
   theme(
     panel.border        = element_rect(linewidth = 0.8, colour = "black"),
     panel.grid.major    = element_line(linewidth = 0.4, colour = "grey85"),
     panel.grid.minor    = element_blank(),
-    axis.title.y        = element_blank(),
-    axis.text.y         = element_blank(),
-    axis.ticks.y        = element_blank(),
-    axis.title.x = element_text(face = "bold", size = 14),
-    plot.title          = element_text(face = "bold", hjust = 0.5, size = 16)
+    axis.title.x = element_text(face = "bold"),
+    axis.title.y = element_text(face = "bold"),
+    plot.title          = element_text(face = "bold", hjust = 0.5)
   ) +
   labs(
     title = "Posterior Density of Transmission Rate λ",
-    x = "Parameter Value"
+    x = "Parameter Value",
+    y = "Density"
   )
 
 ggsave(
@@ -478,20 +472,19 @@ ggplot(chains, aes(x = gamma, y = 0)) +
     point_color       = "black",
     interval_color    = "black"
   ) +
-  theme_bw(base_size = 14) +
+  theme_bw() +
   theme(
     panel.border        = element_rect(linewidth = 0.8, colour = "black"),
     panel.grid.major    = element_line(linewidth = 0.4, colour = "grey85"),
     panel.grid.minor    = element_blank(),
-    axis.title.y        = element_blank(),
-    axis.text.y         = element_blank(),
-    axis.ticks.y        = element_blank(),
-    axis.title.x = element_text(face = "bold", size = 14),
-    plot.title          = element_text(face = "bold", hjust = 0.5, size = 16)
+    axis.title.x = element_text(face = "bold"),
+    axis.title.y = element_text(face = "bold"),
+    plot.title          = element_text(face = "bold", hjust = 0.5)
   ) +
   labs(
     title = "Posterior Density of Recovery Rate γ",
-    x = "Parameter Value"
+    x = "Parameter Value",
+    y = "Density"
   )
 
 ggsave(
@@ -550,20 +543,19 @@ ggplot(chains, aes(x = r0, y = 0)) +
     point_color       = "black",
     interval_color    = "black"
   ) +
-  theme_bw(base_size = 14) +
+  theme_bw() +
   theme(
     panel.border        = element_rect(linewidth = 0.8, colour = "black"),
     panel.grid.major    = element_line(linewidth = 0.4, colour = "grey85"),
     panel.grid.minor    = element_blank(),
-    axis.title.y        = element_blank(),
-    axis.text.y         = element_blank(),
-    axis.ticks.y        = element_blank(),
-    axis.title.x = element_text(face = "bold", size = 14),
-    plot.title          = element_text(face = "bold", hjust = 0.5, size = 16)
+    axis.title.x = element_text(face = "bold"),
+    axis.title.y = element_text(face = "bold"),
+    plot.title          = element_text(face = "bold", hjust = 0.5)
   ) +
   labs(
     title = "Posterior Density of Basic Reproduction Number R₀",
-    x = "Parameter Value"
+    x = "Parameter Value",
+    y = "Density"
   )
 
 ggsave(
@@ -586,20 +578,19 @@ ggplot(chains, aes(x = recovery_time, y = 0)) +
     point_color       = "black",
     interval_color    = "black"
   ) +
-  theme_bw(base_size = 14) +
+  theme_bw() +
   theme(
     panel.border        = element_rect(linewidth = 0.8, colour = "black"),
     panel.grid.major    = element_line(linewidth = 0.4, colour = "grey85"),
     panel.grid.minor    = element_blank(),
-    axis.title.y        = element_blank(),
-    axis.text.y         = element_blank(),
-    axis.ticks.y        = element_blank(),
-    axis.title.x = element_text(face = "bold", size = 14),
-    plot.title          = element_text(face = "bold", hjust = 0.5, size = 16)
+    axis.title.x = element_text(face = "bold"),
+    axis.title.y = element_text(face = "bold"),
+    plot.title          = element_text(face = "bold", hjust = 0.5)
   ) +
   labs(
     title = "Posterior Density of Mean Recovery Time 1/γ",
-    x = "Parameter Value"
+    x = "Parameter Value",
+    y = "Density"
   )
 
 ggsave(
@@ -646,14 +637,14 @@ ggplot() +
     aes(x = time, y = infected, group = type),
     color = "skyblue",
     alpha = 0.7,
-    linewidth = 1.2,
+    linewidth = 1,
     linetype = "dashed"
   ) +
   geom_line(
     data = subset(plot_data_posterior, type == "Observed"),
     aes(x = time, y = infected),
     color = "darkblue",
-    linewidth = 1.5
+    linewidth = 1
   ) +
   labs(
     x = "Time (Days)",
@@ -665,9 +656,8 @@ ggplot() +
   ) +
   theme_bw() +
   theme(
-    axis.title = element_text(face = "bold", size = 14),
-    axis.text = element_text(size = 12),
-    plot.title = element_text(size = 16, face = "bold", hjust = 0.5),
+    axis.title = element_text(face = "bold"),
+    plot.title = element_text(face = "bold", hjust = 0.5),
     legend.position = "top",
     legend.title = element_blank(),
     panel.grid = element_blank()
@@ -731,9 +721,8 @@ ggplot(infected_quantiles_df, mapping = aes(x = time)) +
   ) +
   theme_bw() +
   theme(
-    axis.title = element_text(face = "bold", size = 14),
-    axis.text = element_text(size = 12),
-    plot.title = element_text(size = 16, face = "bold", hjust = 0.5)
+    axis.title = element_text(face = "bold"),
+    plot.title = element_text(face = "bold", hjust = 0.5)
   )
 
 ggsave(
