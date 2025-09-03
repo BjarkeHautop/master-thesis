@@ -66,7 +66,7 @@ latent_i <- true_states[, 2]
 # 1st observation is deterministic.
 
 observations <- rnbinom(
-  length(latent_i) ,
+  length(latent_i),
   size = true_phi,
   mu = latent_i
 )
@@ -129,7 +129,7 @@ data_long$state <- factor(data_long$state, levels = c("s", "i", "y"))
 plot_epidemic_data(data_long, t_max)
 
 ggsave(
-  "epidemic_data_plot_negbin.png",
+  "outputs/epidemic_data_plot_negbin.png",
   dpi = 300,
   width = 6.27,
   height = 4,
@@ -153,7 +153,9 @@ log_prior_gamma <- function(gamma) {
 
 # 1 / sqrt(phi) ~ Normal+(0, 1)
 log_prior_phi <- function(phi) {
-  if (phi <= 0) return(-Inf)
+  if (phi <= 0) {
+    return(-Inf)
+  }
 
   xi <- 1 / sqrt(phi)
   # half‑Normal(0,1):
@@ -190,7 +192,6 @@ init_fn_epidemic <- function(num_particles) {
 }
 
 transition_fn_epidemic <- function(particles, lambda, gamma, t) {
-
   n_total <- 500
 
   epidemic_step <- function(state, lambda, gamma, n_total) {
@@ -349,7 +350,7 @@ ggplot() +
 
 # Save the plot
 ggsave(
-  "prior_predictive_check_sir_example_6.1_negbin.png",
+  "outputs/prior_predictive_check_sir_example_6.1_negbin.png",
   dpi = 300,
   width = 6.27,
   height = 4,
@@ -412,7 +413,7 @@ ggplot(chains, aes(x = lambda, fill = factor(chain))) +
   )
 
 ggsave(
-  "density_plot_example_6.1_lambda_negbin.png",
+  "outputs/density_plot_example_6.1_lambda_negbin.png",
   dpi = 300,
   width = 6.27,
   height = 4,
@@ -433,7 +434,7 @@ ggplot(chains, aes(x = gamma, fill = factor(chain))) +
   )
 
 ggsave(
-  "density_plot_example_6.1_gamma_negbin.png",
+  "outputs/density_plot_example_6.1_gamma_negbin.png",
   dpi = 300,
   width = 6.27,
   height = 4,
@@ -454,7 +455,7 @@ ggplot(chains, aes(x = phi, fill = factor(chain))) +
   )
 
 ggsave(
-  "density_plot_example_6.1_phi_negbin.png",
+  "outputs/density_plot_example_6.1_phi_negbin.png",
   dpi = 300,
   width = 6.27,
   height = 4,
@@ -483,7 +484,8 @@ plot_data_posterior <- data.frame(
   type = rep(
     c(
       "Observed",
-      paste0("Sampled ", seq_along(posterior_trajectories))),
+      paste0("Sampled ", seq_along(posterior_trajectories))
+    ),
     each = t_max
   )
 )
@@ -522,10 +524,9 @@ ggplot() +
   )
 
 ggsave(
-  "posterior_predictive_check_example_6.1_negbin.png",
+  "outputs/posterior_predictive_check_example_6.1_negbin.png",
   dpi = 300,
   width = 6.27,
   height = 4,
   units = "in"
 )
-

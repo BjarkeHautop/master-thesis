@@ -56,7 +56,7 @@ sigma_y_val <- 1
 
 sim_data <- simulate_ssm(t_val, phi_val, sigma_x_val, sigma_y_val)
 x_true <- sim_data$x
-y_obs  <- sim_data$y
+y_obs <- sim_data$y
 
 df <- tibble(
   time = seq_along(x_true[-1]),
@@ -69,8 +69,10 @@ ggplot(df, aes(x = time)) +
   geom_line(aes(y = x_true, color = "X_t"), linewidth = 1) +
   geom_point(aes(y = y_obs, color = "Y_t"), size = 1.8, alpha = 0.5) +
   scale_color_viridis_d(option = "plasma", begin = 0.2, end = 0.8) +
-  labs(title = "Latent and Observed States Over Time",
-       x = "Time", y = "State Value", color = "State Type") +
+  labs(
+    title = "Latent and Observed States Over Time",
+    x = "Time", y = "State Value", color = "State Type"
+  ) +
   theme_bw() +
   theme(
     axis.title = element_text(face = "bold"),
@@ -79,7 +81,7 @@ ggplot(df, aes(x = time)) +
     panel.grid = element_blank()
   )
 
-ggsave("example_3.1.png", width = 6.27, height = 4, dpi = 300)
+ggsave("outputs/example_3.1.png", width = 6.27, height = 4, dpi = 300)
 
 result_sis <- particle_filter(
   y = y_obs,
@@ -122,8 +124,8 @@ result_sisar <- particle_filter(
 
 rmse <- function(est, true) sqrt(mean((est - true)^2))
 
-rmse_sis   <- rmse(result_sis$state_est, x_true)
-rmse_sisr  <- rmse(result_sisr$state_est, x_true)
+rmse_sis <- rmse(result_sis$state_est, x_true)
+rmse_sisr <- rmse(result_sisr$state_est, x_true)
 rmse_sisar <- rmse(result_sisar$state_est, x_true)
 
 cat("Single simulation RMSEs (my package):\n")
@@ -134,13 +136,18 @@ cat("  SISAR :", rmse_sisar, "\n\n")
 time <- 0:t_val
 df_state <- data.frame(
   Time = rep(time, 4),
-  State = c(x_true,
-            result_sis$state_est,
-            result_sisr$state_est,
-            result_sisar$state_est),
-  Method = factor(rep(c("Latent State", "SIS", "SISR", "SISAR"),
-                      each = length(time)),
-                  levels = c("Latent State", "SIS", "SISR", "SISAR"))
+  State = c(
+    x_true,
+    result_sis$state_est,
+    result_sisr$state_est,
+    result_sisar$state_est
+  ),
+  Method = factor(
+    rep(c("Latent State", "SIS", "SISR", "SISAR"),
+      each = length(time)
+    ),
+    levels = c("Latent State", "SIS", "SISR", "SISAR")
+  )
 )
 
 ggplot(df_state, aes(x = Time, y = State, color = Method, linetype = Method)) +
@@ -164,8 +171,8 @@ ggsave("example_3.1_estimates.png", width = 6.27, height = 4, dpi = 300)
 ###########################################
 
 n_reps <- 10000
-rmse_sis_all   <- numeric(n_reps)
-rmse_sisr_all  <- numeric(n_reps)
+rmse_sis_all <- numeric(n_reps)
+rmse_sisr_all <- numeric(n_reps)
 rmse_sisar_all <- numeric(n_reps)
 
 for (i in 1:n_reps) {
@@ -175,7 +182,7 @@ for (i in 1:n_reps) {
   }
   sim_data <- simulate_ssm(t_val, phi_val, sigma_x_val, sigma_y_val)
   x_true <- sim_data$x
-  y_obs  <- sim_data$y
+  y_obs <- sim_data$y
 
   result_sis <- particle_filter(
     y = y_obs,
@@ -215,17 +222,17 @@ for (i in 1:n_reps) {
     sigma_y = sigma_y_val
   )
 
-  rmse_sis_all[i]   <- rmse(result_sis$state_est, x_true)
-  rmse_sisr_all[i]  <- rmse(result_sisr$state_est, x_true)
+  rmse_sis_all[i] <- rmse(result_sis$state_est, x_true)
+  rmse_sisr_all[i] <- rmse(result_sisr$state_est, x_true)
   rmse_sisar_all[i] <- rmse(result_sisar$state_est, x_true)
 }
 
-rmse_sis_mean   <- mean(rmse_sis_all)
-rmse_sis_sd     <- sd(rmse_sis_all)
-rmse_sisr_mean  <- mean(rmse_sisr_all)
-rmse_sisr_sd    <- sd(rmse_sisr_all)
+rmse_sis_mean <- mean(rmse_sis_all)
+rmse_sis_sd <- sd(rmse_sis_all)
+rmse_sisr_mean <- mean(rmse_sisr_all)
+rmse_sisr_sd <- sd(rmse_sisr_all)
 rmse_sisar_mean <- mean(rmse_sisar_all)
-rmse_sisar_sd   <- sd(rmse_sisar_all)
+rmse_sisar_sd <- sd(rmse_sisar_all)
 
 cat("RMSE over", n_reps, "replications:\n")
 cat("  SIS   : Mean =", rmse_sis_mean, "SD =", rmse_sis_sd, "\n")
@@ -238,13 +245,14 @@ df_rmse <- data.frame(
     levels = c("SIS", "SISR", "SISAR")
   ),
   rmse_mean = c(rmse_sis_mean, rmse_sisr_mean, rmse_sisar_mean),
-  rmse_sd   = c(rmse_sis_sd, rmse_sisr_sd, rmse_sisar_sd)
+  rmse_sd = c(rmse_sis_sd, rmse_sisr_sd, rmse_sisar_sd)
 )
 
 p_rmse <- ggplot(df_rmse, aes(x = Method, y = rmse_mean, fill = Method)) +
   geom_bar(stat = "identity", width = 0.6) +
   geom_errorbar(aes(ymin = rmse_mean - rmse_sd, ymax = rmse_mean + rmse_sd),
-                width = 0.2) +
+    width = 0.2
+  ) +
   theme_minimal() +
   labs(
     title = "RMSE of Particle Filter Methods (10000 Replications)",

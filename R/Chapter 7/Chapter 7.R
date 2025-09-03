@@ -31,7 +31,7 @@ ggplot(preprocessed_data, aes(x = time, y = in_bed)) +
   scale_x_continuous(breaks = 1:14)
 
 ggsave(
-  "influenza_outbreak_plot.png",
+  "outputs/influenza_outbreak_plot.png",
   dpi = 300,
   width = 6.27,
   height = 4,
@@ -155,7 +155,6 @@ init_fn_epidemic <- function(num_particles) {
 }
 
 transition_fn_epidemic <- function(particles, lambda, gamma, t) {
-
   n_total <- 763
 
   epidemic_step <- function(state, lambda, gamma, n_total) {
@@ -315,7 +314,7 @@ ggplot() +
 
 # Save the plot
 ggsave(
-  "prior_predictive_check_influenza_sir_negbin.png",
+  "outputs/prior_predictive_check_influenza_sir_negbin.png",
   dpi = 300,
   width = 6.27,
   height = 4,
@@ -374,7 +373,7 @@ ggplot(chains, aes(x = lambda, fill = chain)) +
   )
 
 ggsave(
-  "density_plot_lambda_influenza_sir_negbin.png",
+  "outputs/density_plot_lambda_influenza_sir_negbin.png",
   dpi = 300,
   width = 6.27,
   height = 4,
@@ -395,7 +394,7 @@ ggplot(chains, aes(x = gamma, fill = chain)) +
   )
 
 ggsave(
-  "density_plot_gamma_influenza_sir_negbin.png",
+  "outputs/density_plot_gamma_influenza_sir_negbin.png",
   dpi = 300,
   width = 6.27,
   height = 4,
@@ -416,7 +415,7 @@ ggplot(chains, aes(x = phi, fill = factor(chain))) +
   )
 
 ggsave(
-  "density_plot_phi_influenza_sir_negbin.png",
+  "outputs/density_plot_phi_influenza_sir_negbin.png",
   dpi = 300,
   width = 6.27,
   height = 4,
@@ -429,22 +428,22 @@ ggplot(chains, aes(x = lambda, y = 0)) +
   stat_halfeye(
     point_interval = "mean_qi",
     .width = 0.95,
-    slab_fill         = "#3B83BD80",
-    slab_color        = "NA",
-    slab_alpha        = 0.6,
-    interval_size     = 1.2,
-    point_size        = 2.5,
-    point_color       = "black",
-    interval_color    = "black"
+    slab_fill = "#3B83BD80",
+    slab_color = "NA",
+    slab_alpha = 0.6,
+    interval_size = 1.2,
+    point_size = 2.5,
+    point_color = "black",
+    interval_color = "black"
   ) +
   theme_bw() +
   theme(
-    panel.border        = element_rect(linewidth = 0.8, colour = "black"),
-    panel.grid.major    = element_line(linewidth = 0.4, colour = "grey85"),
-    panel.grid.minor    = element_blank(),
+    panel.border = element_rect(linewidth = 0.8, colour = "black"),
+    panel.grid.major = element_line(linewidth = 0.4, colour = "grey85"),
+    panel.grid.minor = element_blank(),
     axis.title.x = element_text(face = "bold"),
     axis.title.y = element_text(face = "bold"),
-    plot.title          = element_text(face = "bold", hjust = 0.5)
+    plot.title = element_text(face = "bold", hjust = 0.5)
   ) +
   labs(
     title = "Posterior Density of Transmission Rate λ",
@@ -453,7 +452,7 @@ ggplot(chains, aes(x = lambda, y = 0)) +
   )
 
 ggsave(
-  "combined_density_lambda_influenza_sir_negbin.png",
+  "outputs/combined_density_lambda_influenza_sir_negbin.png",
   dpi = 300,
   width = 6.27,
   height = 4,
@@ -464,22 +463,22 @@ ggplot(chains, aes(x = gamma, y = 0)) +
   stat_halfeye(
     point_interval = "mean_qi",
     .width = 0.95,
-    slab_fill         = "#3B83BD80",
-    slab_color        = "NA",
-    slab_alpha        = 0.6,
-    interval_size     = 1.2,
-    point_size        = 2.5,
-    point_color       = "black",
-    interval_color    = "black"
+    slab_fill = "#3B83BD80",
+    slab_color = "NA",
+    slab_alpha = 0.6,
+    interval_size = 1.2,
+    point_size = 2.5,
+    point_color = "black",
+    interval_color = "black"
   ) +
   theme_bw() +
   theme(
-    panel.border        = element_rect(linewidth = 0.8, colour = "black"),
-    panel.grid.major    = element_line(linewidth = 0.4, colour = "grey85"),
-    panel.grid.minor    = element_blank(),
+    panel.border = element_rect(linewidth = 0.8, colour = "black"),
+    panel.grid.major = element_line(linewidth = 0.4, colour = "grey85"),
+    panel.grid.minor = element_blank(),
     axis.title.x = element_text(face = "bold"),
     axis.title.y = element_text(face = "bold"),
-    plot.title          = element_text(face = "bold", hjust = 0.5)
+    plot.title = element_text(face = "bold", hjust = 0.5)
   ) +
   labs(
     title = "Posterior Density of Recovery Rate γ",
@@ -488,7 +487,7 @@ ggplot(chains, aes(x = gamma, y = 0)) +
   )
 
 ggsave(
-  "combined_density_gamma_influenza_sir_negbin.png",
+  "outputs/combined_density_gamma_influenza_sir_negbin.png",
   dpi = 300,
   width = 6.27,
   height = 4,
@@ -535,22 +534,22 @@ ggplot(chains, aes(x = r0, y = 0)) +
   stat_halfeye(
     point_interval = "mean_qi",
     .width = 0.95,
-    slab_fill         = "#3B83BD80",
-    slab_color        = "NA",
-    slab_alpha        = 0.6,
-    interval_size     = 1.2,
-    point_size        = 2.5,
-    point_color       = "black",
-    interval_color    = "black"
+    slab_fill = "#3B83BD80",
+    slab_color = "NA",
+    slab_alpha = 0.6,
+    interval_size = 1.2,
+    point_size = 2.5,
+    point_color = "black",
+    interval_color = "black"
   ) +
   theme_bw() +
   theme(
-    panel.border        = element_rect(linewidth = 0.8, colour = "black"),
-    panel.grid.major    = element_line(linewidth = 0.4, colour = "grey85"),
-    panel.grid.minor    = element_blank(),
+    panel.border = element_rect(linewidth = 0.8, colour = "black"),
+    panel.grid.major = element_line(linewidth = 0.4, colour = "grey85"),
+    panel.grid.minor = element_blank(),
     axis.title.x = element_text(face = "bold"),
     axis.title.y = element_text(face = "bold"),
-    plot.title          = element_text(face = "bold", hjust = 0.5)
+    plot.title = element_text(face = "bold", hjust = 0.5)
   ) +
   labs(
     title = "Posterior Density of Basic Reproduction Number R₀",
@@ -559,7 +558,7 @@ ggplot(chains, aes(x = r0, y = 0)) +
   )
 
 ggsave(
-  "combined_density_r0_influenza_sir_negbin.png",
+  "outputs/combined_density_r0_influenza_sir_negbin.png",
   dpi = 300,
   width = 6.27,
   height = 4,
@@ -570,22 +569,22 @@ ggplot(chains, aes(x = recovery_time, y = 0)) +
   stat_halfeye(
     point_interval = "mean_qi",
     .width = 0.95,
-    slab_fill         = "#3B83BD80",
-    slab_color        = "NA",
-    slab_alpha        = 0.6,
-    interval_size     = 1.2,
-    point_size        = 2.5,
-    point_color       = "black",
-    interval_color    = "black"
+    slab_fill = "#3B83BD80",
+    slab_color = "NA",
+    slab_alpha = 0.6,
+    interval_size = 1.2,
+    point_size = 2.5,
+    point_color = "black",
+    interval_color = "black"
   ) +
   theme_bw() +
   theme(
-    panel.border        = element_rect(linewidth = 0.8, colour = "black"),
-    panel.grid.major    = element_line(linewidth = 0.4, colour = "grey85"),
-    panel.grid.minor    = element_blank(),
+    panel.border = element_rect(linewidth = 0.8, colour = "black"),
+    panel.grid.major = element_line(linewidth = 0.4, colour = "grey85"),
+    panel.grid.minor = element_blank(),
     axis.title.x = element_text(face = "bold"),
     axis.title.y = element_text(face = "bold"),
-    plot.title          = element_text(face = "bold", hjust = 0.5)
+    plot.title = element_text(face = "bold", hjust = 0.5)
   ) +
   labs(
     title = "Posterior Density of Mean Recovery Time 1/γ",
@@ -594,7 +593,7 @@ ggplot(chains, aes(x = recovery_time, y = 0)) +
   )
 
 ggsave(
-  "combined_density_recovery_time_influenza_sir_negbin.png",
+  "outputs/combined_density_recovery_time_influenza_sir_negbin.png",
   dpi = 300,
   width = 6.27,
   height = 4,
@@ -664,7 +663,7 @@ ggplot() +
   )
 
 ggsave(
-  "posterior_predictive_check_influenza_sir_negbin.png",
+  "outputs/posterior_predictive_check_influenza_sir_negbin.png",
   dpi = 300,
   width = 6.27,
   height = 4,
@@ -726,7 +725,7 @@ ggplot(infected_quantiles_df, mapping = aes(x = time)) +
   )
 
 ggsave(
-  "latent_state_estimation_influenza_sir_negbin.png",
+  "outputs/latent_state_estimation_influenza_sir_negbin.png",
   dpi = 300,
   width = 6.27,
   height = 4,
@@ -846,8 +845,7 @@ if2_epidemic <- function(
     Nmif = 100,
     rw_sd = c(lambda = 0.1, gamma = 0.1, phi = 0.1),
     cooling_fraction = 0.95,
-    return_trace = FALSE
-) {
+    return_trace = FALSE) {
   p <- length(start_params)
   params <- matrix(start_params, nrow = Np, ncol = p, byrow = TRUE)
   colnames(params) <- names(start_params)
@@ -861,14 +859,16 @@ if2_epidemic <- function(
 
     # Add noise to parameter swarm
     Theta_F <- params + matrix(
-      rnorm(Np * p, mean = 0, sd = sd_m), nrow = Np, ncol = p
+      rnorm(Np * p, mean = 0, sd = sd_m),
+      nrow = Np, ncol = p
     )
     colnames(Theta_F) <- names(start_params)
     X_F <- init_fn_epidemic(Np)
 
     for (n in seq_along(y)) {
       Theta_P <- Theta_F + matrix(
-        rnorm(Np * p, mean = 0, sd = sd_m), nrow = Np, ncol = p
+        rnorm(Np * p, mean = 0, sd = sd_m),
+        nrow = Np, ncol = p
       )
       colnames(Theta_P) <- names(start_params)
 
@@ -877,7 +877,7 @@ if2_epidemic <- function(
         X_P[i, ] <- transition_fn_epidemic(
           particles = matrix(X_F[i, ], nrow = 1),
           lambda = Theta_P[i, "lambda"],
-          gamma  = Theta_P[i, "gamma"],
+          gamma = Theta_P[i, "gamma"],
           t = n
         )
       }
@@ -885,7 +885,7 @@ if2_epidemic <- function(
       log_w <- log_likelihood_fn_epidemic(
         y = y[n],
         particles = X_P,
-        phi = Theta_P[,"phi"],
+        phi = Theta_P[, "phi"],
         t = n
       )
 
@@ -893,7 +893,7 @@ if2_epidemic <- function(
       w <- w / sum(w)
       idx <- resample_stratified(1:Np, w)
       Theta_F <- Theta_P[idx, , drop = FALSE]
-      X_F     <- X_P[idx, , drop = FALSE]
+      X_F <- X_P[idx, , drop = FALSE]
     }
 
     mean_params[m, ] <- colMeans(Theta_F)
