@@ -11,8 +11,8 @@ The PMMH code is built on my R package
 alongside this thesis.  
 
 A `renv` lock file is included to ensure consistent package versions. 
-Additionally, a Docker image is provided to run the scripts in a controlled
-environment.
+Additionally, a Dockerfile is provided to build a container and run the scripts
+in a controlled environment.
 
 ## Running the R scripts locally
 
