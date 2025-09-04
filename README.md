@@ -1,6 +1,6 @@
-# Master Thesis R Scripts
+# Master Thesis Scripts
 
-This repository contains the R code used to reproduce the results from my
+This repository contains the code used to reproduce the results from my
 Master's thesis.
 Implementations of any example or analysis using Particle Marginal 
 Metropolis-Hastings (PMMH) include precomputed results stored in `.rds` files. 
