@@ -163,7 +163,7 @@ ggplot(df_state, aes(x = Time, y = State, color = Method, linetype = Method)) +
     panel.grid = element_blank()
   )
 
-ggsave("example_3.1_estimates.png", width = 6.27, height = 4, dpi = 300)
+ggsave("outputs/example_3.1_estimates.png", width = 6.27, height = 4, dpi = 300)
 
 
 ###########################################

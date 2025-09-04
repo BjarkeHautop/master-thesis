@@ -392,10 +392,15 @@ result_sir_example_6.1_negbin <- pmmh(
   num_cores = 4
 )
 
-saveRDS(result_sir_example_6.1_negbin, "result_sir_example_6.1_negbin.rds")
+saveRDS(
+  result_sir_example_6.1_negbin,
+  file = "outputs/result_sir_example_6.1_negbin.rds"
+)
 
 # Or load the result from a file
-result_sir_example_6.1_negbin <- readRDS("result_sir_example_6.1_negbin.rds")
+result_sir_example_6.1_negbin <- readRDS(
+  "outputs/result_sir_example_6.1_negbin.rds"
+)
 
 chains <- result_sir_example_6.1_negbin$theta_chain
 

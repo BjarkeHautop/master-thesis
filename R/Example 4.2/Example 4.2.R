@@ -215,10 +215,10 @@ result_sir_example_4.2 <- pmmh(
 )
 
 
-saveRDS(result_sir_example_4.2, "result_sir_example_4.2.rds")
+saveRDS(result_sir_example_4.2, "outputs/result_sir_example_4.2.rds")
 
 # Or load the result from a file
-result_sir_example_4.2 <- readRDS("result_sir_example_4.2.rds")
+result_sir_example_4.2 <- readRDS("outputs/result_sir_example_4.2.rds")
 
 ###########################################
 # 6. Posterior predictive check

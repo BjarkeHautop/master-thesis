@@ -352,10 +352,13 @@ result_influenza_sir_negbin <- pmmh(
   num_cores = 4
 )
 
-saveRDS(result_influenza_sir_negbin, file = "result_influenza_sir_negbin.rds")
+saveRDS(
+  result_influenza_sir_negbin,
+  file = "outputs/result_influenza_sir_negbin.rds"
+)
 
 # Or load the result from the saved file
-result_influenza_sir_negbin <- readRDS("result_influenza_sir_negbin.rds")
+result_influenza_sir_negbin <- readRDS("outputs/result_influenza_sir_negbin.rds")
 
 chains <- result_influenza_sir_negbin$theta_chain
 
