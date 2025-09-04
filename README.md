@@ -14,7 +14,7 @@ A `renv` lock file is included to ensure consistent package versions.
 Additionally, a Docker image is provided to run the scripts in a controlled
 environment.
 
-## Running scripts locally
+## Running the R scripts locally
 
 1. Clone the repository:
 
@@ -39,7 +39,7 @@ source("Example 3.1/Example 3.1.R")
 Replace `Example 3.1/Example 3.1.R` with the path to any other script you 
 wish to run.
 
-## Running scripts using Docker
+## Running the R scripts using Docker
 
 1. Clone the repository:
 
