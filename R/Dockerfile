@@ -1,19 +1,18 @@
-# Use R 4.5.1 base image
 FROM rocker/r-ver:4.5.1
 
-# Set working directory inside container
+# make renv install destination persistent at runtime
+ENV RENV_PATHS_LIBRARY=/usr/local/lib/R/site-library
+
 WORKDIR /project
 
 COPY renv/ /project/renv/
 COPY renv.lock .Rprofile master-thesis.Rproj /project/
 
-# Install renv and restore packages non-interactively
 RUN apt-get update && apt-get install -y libicu-dev pandoc \
-    && R -e "install.packages('renv', repos='https://cloud.r-project.org')" \
-    && R -e "source('renv/activate.R'); renv::restore(prompt = FALSE, clean = TRUE)"
+  && R -e "install.packages('renv', repos='https://cloud.r-project.org')" \
+  && mkdir -p /usr/local/lib/R/site-library \
+  && R -e "source('/project/renv/activate.R'); renv::restore(prompt = FALSE, clean = TRUE, rebuild = TRUE)"
 
-# Copy the rest of the project (source code, data, etc.)
 COPY . /project
 
-# Default: launch R (can override with docker run)
 CMD ["R"]
