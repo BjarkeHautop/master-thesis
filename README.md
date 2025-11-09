@@ -57,8 +57,7 @@ docker build -t master-thesis .
 3. Run a specific script (e.g. `Example 3.1/Example 3.1.R`) like this:
 
 ```powershell
-docker run --rm -v "C:/Users/yourname/path/to/repo/R:/project" master-thesis `
-Rscript "/project/Example 3.1/Example 3.1.R"
+docker run --rm -v /full/path/to/repo/R:/project master-thesis Rscript "/project/Example 3.1/Example 3.1.R"
 ```
 
 Replace the path with the actual path to the cloned repository on your
