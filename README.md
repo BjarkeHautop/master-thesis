@@ -19,7 +19,7 @@ in a controlled environment.
 1. Clone the repository:
 
 ```powershell
-git clone https://github.com/BjarkeHautop/master-thesis
+git clone github.com/BjarkeHautop/master-thesis
 cd master-thesis/R
 ```
 
@@ -44,7 +44,7 @@ wish to run.
 1. Clone the repository:
 
 ```powershell
-git clone https://github.com/BjarkeHautop/master-thesis
+git clone github.com/BjarkeHautop/master-thesis
 cd master-thesis/R
 ```
 
